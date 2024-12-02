@@ -1,5 +1,6 @@
 import PocketBase from 'pocketbase';
+import { API_URL } from './constants';
 
-const pb = new PocketBase("https://0303-184-22-104-57.ngrok-free.app");
+const pb = new PocketBase(API_URL);
 
 export default pb;
