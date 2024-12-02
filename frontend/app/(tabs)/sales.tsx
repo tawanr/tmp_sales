@@ -8,7 +8,7 @@ import ProductList from '@/components/ProductList';
 export default function Sales() {
   return (
     <SafeAreaProvider>
-      <ProductList />
+      <ProductList rowCount={2} />
     </SafeAreaProvider>
   );
 }
