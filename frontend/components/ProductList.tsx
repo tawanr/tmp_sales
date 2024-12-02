@@ -74,6 +74,12 @@ export default function ProductList({rowCount = 3}: Props) {
     console.log(count);
   };
 
+  const reloadList = () => {
+    getProducts(searchTerm).then((productList) => {
+      setProducts(productList);
+    });
+  }
+
   let modalContent = null;
   if (selectedProduct) {
     modalContent = (
@@ -89,7 +95,7 @@ export default function ProductList({rowCount = 3}: Props) {
         {modalContent}
       </Modal>
       <View style={[styles.searchBarContainer]}>
-        <TextInput style={[styles.searchBar]} placeholder="Search" onChangeText={setSearchTerm} value={searchTerm} placeholderTextColor={'#999'} />
+        <TextInput style={[styles.searchBar]} placeholder="Search" onChangeText={setSearchTerm} onEndEditing={reloadList} value={searchTerm} placeholderTextColor={'#999'} />
       </View>
       <View style={{ flex: 1, flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={[styles.listContainer]}>
