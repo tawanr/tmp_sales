@@ -71,10 +71,10 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
-  rowCount: number;
+  columnCount: number;
 };
 
-export default function ProductList({rowCount = 3}: Props) {
+export default function ProductList({columnCount = 3}: Props) {
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -136,7 +136,7 @@ export default function ProductList({rowCount = 3}: Props) {
         </View>
       </View>
       <View style={[styles.shoppingIconContainer]}>
-        <Link href="/order">
+        <Link href="/sales/order">
           <Image source={require('../assets/images/shopping-cart.png')} style={[styles.shoppingIcon]} />
         </Link>
       </View>

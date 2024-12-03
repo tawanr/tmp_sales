@@ -16,13 +16,7 @@ export default function TabLayout() {
         options={{
           title: 'Sales',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="file" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="order"
-        options={{
-          title: 'Order',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="shopping-cart" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
