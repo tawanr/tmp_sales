@@ -6,6 +6,7 @@ export interface Product {
   price: number;
   image: string;
   kg: number;
+  unit: string;
 }
 
 export async function getProducts(search: string = ""): Promise<Product[]> {

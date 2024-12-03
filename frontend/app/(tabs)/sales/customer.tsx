@@ -1,13 +1,14 @@
 import { useOrderStore } from "@/services/OrderService";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 type CustomerForm = {
   name: string;
   address: string;
   phone: string;
   deliveryNote: string;
+  deliveryService: string;
 };
 
 const styles = StyleSheet.create({
@@ -19,7 +20,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
-    width: "80%",
+    width: "70%",
   },
   inputRow: {
     flexDirection: "row",
@@ -31,6 +32,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     alignContent: "center",
     paddingRight: 10,
+  },
+  fullButton: {
+    width: "100%",
+    height: 35,
+    backgroundColor: "#00e",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    marginBottom: 15,
+    marginTop: 5,
   },
 });
 
@@ -46,7 +57,9 @@ export default function Customer() {
       address: customer.address,
       phone: customer.phone,
       deliveryNote: customer.deliveryNote,
+      deliveryService: customer.deliveryService,
     },
+    values: customer,
   });
   const onSubmit = (formData: CustomerForm) => {
     updateCustomer({ ...formData, id: customer.id });
@@ -54,6 +67,16 @@ export default function Customer() {
   };
   return (
     <View style={[styles.container]}>
+      <View style={[styles.fullButton]}>
+        <Pressable
+          style={[styles.fullButton]}
+          onPress={() => router.push("/sales/customer-list")}
+        >
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <Text style={{ color: "#fff" }}>เลือกลูกค้า</Text>
+          </View>
+        </Pressable>
+      </View>
       <Controller
         control={control}
         name="name"
@@ -92,6 +115,29 @@ export default function Customer() {
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
+              />
+            </View>
+          </View>
+        )}
+      />
+      <Controller
+        control={control}
+        name="deliveryService"
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <View style={[styles.inputRow]}>
+            <View style={{ justifyContent: "center", alignContent: "center" }}>
+              <Text style={[styles.inputLabel]}>Deliverer:</Text>
+            </View>
+            <View style={[styles.inputField]}>
+              <TextInput
+                style={{ width: "100%" }}
+                placeholder="Deliverer"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                numberOfLines={4}
+                multiline={true}
               />
             </View>
           </View>

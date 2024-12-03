@@ -20,7 +20,7 @@ type OrderActions = {
 
 function generateOrderText(order: OrderItem): string {
   const { product, count } = order;
-  let text = `${product.label} = ${count}\n`;
+  let text = `${product.label} = ${count} ${product.unit}\n`;
   text += `${count} x ${product.kg} x ${product.price}  = ${
     product.price * product.kg * count
   }\n\n`;
@@ -32,10 +32,12 @@ export function generateOrderSummary(
   customer: Customer
 ): string {
   const date = new Date();
-  // const { orders, customer } = useOrderStore();
   let text = "";
   let totalCost = 0;
-  text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n\n`;
+  text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n`;
+  if (customer.deliveryService.length > 0) {
+    text += `ส่ง ${customer.deliveryService}\n\n`;
+  }
   orders.forEach((order) => {
     text += generateOrderText(order);
     totalCost += order.product.price * order.count * order.product.kg;
@@ -56,6 +58,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     address: "",
     phone: "",
     deliveryNote: "",
+    deliveryService: "",
   },
   addItem: (item: OrderItem) => {
     set((state: OrderState) => {

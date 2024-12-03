@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   Button,
   TextInput,
+  Keyboard,
 } from "react-native";
 import { API_URL } from "@/utils/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: "#eee",
-    marginTop: 6,
+    marginVertical: 6,
   },
   minusButton: {
     backgroundColor: "#aaa",
@@ -102,6 +103,9 @@ const styles = StyleSheet.create({
 export default function ProductDetails({ product, close, callback }: Props) {
   const image_path = `${API_URL}/api/files/products/${product.id}/${product.image}`;
   const [count, setCount] = useState(1);
+  if (isNaN(count) || count < 1) {
+    setCount(1);
+  }
   const addProduct = () => {
     callback(product, count);
     close();
@@ -111,11 +115,10 @@ export default function ProductDetails({ product, close, callback }: Props) {
   };
   return (
     <View style={[styles.detailsContainer]}>
-      <Pressable onPress={() => null}>
+      <Pressable onPress={() => Keyboard.dismiss()}>
         <View style={[styles.modalContainer]}>
           <View>
             <Text style={[styles.title]}>{product.label}</Text>
-            <Image source={{ uri: image_path }} style={[styles.cardImage]} />
             <View style={[styles.countRow]}>
               <Pressable
                 onPress={() => setCount(count - 1)}
@@ -129,6 +132,7 @@ export default function ProductDetails({ product, close, callback }: Props) {
                 onChangeText={convertCount}
                 inputMode="numeric"
                 returnKeyType="done"
+                selectTextOnFocus={true}
               />
               <Pressable
                 onPress={() => setCount(count + 1)}
@@ -137,6 +141,7 @@ export default function ProductDetails({ product, close, callback }: Props) {
                 <Text style={[styles.countText]}>+</Text>
               </Pressable>
             </View>
+            <Image source={{ uri: image_path }} style={[styles.cardImage]} />
             <View style={[styles.buttonsRow]}>
               <Button title="Cancel" onPress={close} color={"#f00"} />
               <Button title="Add" onPress={addProduct} />
