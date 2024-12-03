@@ -83,8 +83,12 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
 }));
 
 // https://zustand.docs.pmnd.rs/guides/maps-and-sets-usage
-// export function updateCustomer(customer: Customer) {
-//   useOrderStore.setState((prev) => ({
-//     orders: new Map<string, OrderItem>(prev.orders).set(customer.id, customer),
-//     customer: customer,
-//   }))
+export function changeItemAmount(id: string, amount: number) {
+  const state = useOrderStore.getState();
+  if (!state.orders.has(id)) {
+    return;
+  }
+  useOrderStore.setState((prev) => ({
+    orders: new Map<string, OrderItem>(prev.orders).set(id, { ...prev.orders.get(id)!, count: amount }),
+  }))
+}

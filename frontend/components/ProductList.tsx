@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getProducts, Product } from '@/services/ProductService';
-import { SafeAreaView, View, StyleSheet, TextInput, Modal, TouchableOpacity, Pressable, Text, Image } from 'react-native';
+import { SafeAreaView, View, StyleSheet, TextInput, Modal, TouchableOpacity, Pressable, Text, Image, ScrollView } from 'react-native';
 import ProductCard from './ProductCard';
 import ProductDetails from './ProductDetails';
 import { Link } from 'expo-router';
@@ -126,15 +126,24 @@ export default function ProductList({columnCount = 3}: Props) {
         <OrderDetails />
       </Modal>
       <View style={[styles.searchBarContainer]}>
-        <TextInput style={[styles.searchBar]} placeholder="Search" onChangeText={setSearchTerm} onEndEditing={reloadList} value={searchTerm} placeholderTextColor={'#999'} />
+        <TextInput
+          style={[styles.searchBar]}
+          placeholder="Search"
+          onChangeText={setSearchTerm}
+          onEndEditing={reloadList}
+          value={searchTerm}
+          placeholderTextColor={'#999'}
+          enterKeyHint='search'
+          selectTextOnFocus={true}
+        />
       </View>
-      <View style={{ flex: 1, flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <ScrollView keyboardShouldPersistTaps='never' contentContainerStyle={{ flex: 1, flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={[styles.listContainer]}>
           {products.map((product, index) => {
             return <ProductCard key={product.id} product={product} callback={selectProductDetails} />;
           })}
         </View>
-      </View>
+      </ScrollView>
       <View style={[styles.shoppingIconContainer]}>
         <Link href="/sales/order">
           <Image source={require('../assets/images/shopping-cart.png')} style={[styles.shoppingIcon]} />
