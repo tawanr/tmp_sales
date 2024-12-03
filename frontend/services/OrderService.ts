@@ -44,7 +44,7 @@ export function generateOrderSummary(
   });
   text += `รวม ${totalCost} บาท\n\n`;
   text += `ส่ง\n`;
-  text += `${customer.name}\n ${customer.address}\n`;
+  text += `${customer.name}\n${customer.address}\n`;
   text += `เบอร์ ${customer.phone}\n`;
   text += `**นัดรับ ${customer.deliveryNote}\n`;
   return text;
