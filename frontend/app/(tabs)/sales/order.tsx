@@ -1,6 +1,7 @@
-import { useOrderStore } from "@/services/OrderService";
+import { generateOrderSummary, useOrderStore } from "@/services/OrderService";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
 const styles = StyleSheet.create({
   container: {
@@ -27,11 +28,12 @@ const styles = StyleSheet.create({
 });
 
 export default function Order() {
-  const { orders, customer } = useOrderStore();
+  const { orders, customer } = useOrderStore(useShallow((state) => ({ orders: state.orders, customer: state.customer })));
   const orderItems: JSX.Element[] = [];
   orders.forEach((value) => {
     orderItems.push(<Text key={value.product.id}>{ value.product.label } x { value.count }</Text>);
   });
+  const orderSummary = generateOrderSummary(orders, customer);
   return (
     <View style={[styles.container]}>
       <View style={[styles.customerDetails]}>
@@ -49,6 +51,10 @@ export default function Order() {
       <View style={{ borderBottomColor: '#eee', borderBottomWidth: 1, width: '90%', marginVertical: 8 }} />
       <View>
         {orderItems}
+      </View>
+      <View style={{ borderBottomColor: '#eee', borderBottomWidth: 1, width: '90%', marginVertical: 8 }} />
+      <View style={{ width: '90%', marginVertical: 8, justifyContent: 'center', alignItems: 'center' }}>
+        <TextInput multiline={true} value={orderSummary} style={{ width: '90%', height: 200, marginVertical: 8, borderWidth: 1, borderColor: '#eee', borderRadius: 10 }} />
       </View>
     </View>
   );

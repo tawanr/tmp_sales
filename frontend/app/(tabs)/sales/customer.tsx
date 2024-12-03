@@ -1,4 +1,5 @@
 import { useOrderStore } from "@/services/OrderService";
+import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -44,8 +45,8 @@ export default function Customer(){
     }
   });
   const onSubmit = (formData: CustomerForm) => {
-    console.log(formData);
     updateCustomer({...formData, id: customer.id});
+    router.dismiss();
   };
   return (
     <View style={[styles.container]}>
@@ -59,7 +60,7 @@ export default function Customer(){
               <Text style={[styles.inputLabel]}>Name:</Text>
             </View>
             <View style={[styles.inputField]}>
-              <TextInput placeholder="Name" value={value} onChangeText={onChange} onBlur={onBlur} />
+              <TextInput style={{width: '100%' }} placeholder="Name" value={value} onChangeText={onChange} onBlur={onBlur} />
             </View>
           </View>
         )} />
@@ -74,7 +75,7 @@ export default function Customer(){
               <Text style={[styles.inputLabel]}>Phone:</Text>
             </View>
             <View style={[styles.inputField]}>
-              <TextInput placeholder="Phone" value={value} onChangeText={onChange} onBlur={onBlur} />
+              <TextInput style={{width: '100%' }} placeholder="Phone" value={value} onChangeText={onChange} onBlur={onBlur} />
             </View>
           </View>
         )} />
@@ -88,7 +89,7 @@ export default function Customer(){
               <Text style={[styles.inputLabel]}>Address:</Text>
             </View>
             <View style={[styles.inputField]}>
-              <TextInput placeholder="Address" value={value} onChangeText={onChange} onBlur={onBlur} numberOfLines={4} multiline={true} />
+              <TextInput style={{width: '100%' }} placeholder="Address" value={value} onChangeText={onChange} onBlur={onBlur} numberOfLines={4} multiline={true} />
             </View>
           </View>
         )} />
@@ -102,7 +103,7 @@ export default function Customer(){
               <Text style={[styles.inputLabel]}>Note:</Text>
             </View>
             <View style={[styles.inputField]}>
-              <TextInput placeholder="Note" value={value} onChangeText={onChange} onBlur={onBlur} numberOfLines={4} multiline={true} />
+              <TextInput style={{width: '100%' }} placeholder="Note" value={value} onChangeText={onChange} onBlur={onBlur} numberOfLines={4} multiline={true} />
             </View>
           </View>
         )} />

@@ -18,6 +18,31 @@ type OrderActions = {
   updateCustomer: (customer: Customer) => void;
 };
 
+function generateOrderText(order: OrderItem): string {
+  const { product, count } = order;
+  let text = `${product.label} = ${count}\n`;
+  text += `${count} x ${product.kg} x ${product.price}  = ${product.price * product.kg * count}\n\n`;
+  return text;
+}
+
+export function generateOrderSummary(orders: Map<string, OrderItem>, customer: Customer): string {
+  const date = new Date();
+  // const { orders, customer } = useOrderStore();
+  let text = "";
+  let totalCost = 0;
+  text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n\n`;
+  orders.forEach((order) => {
+    text += generateOrderText(order);
+    totalCost += order.product.price * order.count * order.product.kg;
+  });
+  text += `รวม ${totalCost} บาท\n\n`;
+  text += `ส่ง\n`;
+  text += `${customer.name}\n ${customer.address}\n`;
+  text += `เบอร์ ${customer.phone}\n`;
+  text += `**นัดรับ ${customer.deliveryNote}\n`;
+  return text;
+}
+
 export const useOrderStore = create<OrderState & OrderActions>((set) => ({
   orders: new Map<string, OrderItem>(),
   customer: {
@@ -51,8 +76,15 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
   },
   updateCustomer: (customer: Customer) => {
     set((state: OrderState) => {
-      state.customer = customer;
+      state = { ...state, customer: customer };
       return state;
     });
   },
 }));
+
+// https://zustand.docs.pmnd.rs/guides/maps-and-sets-usage
+// export function updateCustomer(customer: Customer) {
+//   useOrderStore.setState((prev) => ({
+//     orders: new Map<string, OrderItem>(prev.orders).set(customer.id, customer),
+//     customer: customer,
+//   }))
