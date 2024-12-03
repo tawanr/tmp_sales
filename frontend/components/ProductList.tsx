@@ -168,7 +168,7 @@ export default function ProductList({ columnCount = 3 }: Props) {
             flexDirection: "row",
             justifyContent: "center",
             alignContent: "center",
-            marginLeft: 7,
+            marginLeft: 6,
             marginTop: 1,
           }}
         >
@@ -203,13 +203,18 @@ export default function ProductList({ columnCount = 3 }: Props) {
           placeholderTextColor={"#999"}
           enterKeyHint="search"
           selectTextOnFocus={true}
+          clearButtonMode="always"
         />
       </View>
       <View style={{ flex: 1, alignContent: "center" }}>
         <FlatList
           data={products}
           renderItem={({ item }) => (
-            <ProductCard product={item} callback={selectProductDetails} />
+            <ProductCard
+              product={item}
+              callback={selectProductDetails}
+              columnCount={columnCount}
+            />
           )}
           keyExtractor={(item) => item.id}
           style={{
@@ -221,7 +226,6 @@ export default function ProductList({ columnCount = 3 }: Props) {
             alignItems: "flex-start",
             justifyContent: "flex-start",
             flexDirection: "column",
-            flex: 1,
             padding: 6,
           }}
           numColumns={columnCount}

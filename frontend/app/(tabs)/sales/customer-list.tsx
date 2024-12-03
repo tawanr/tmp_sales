@@ -145,6 +145,7 @@ export default function CustomerList() {
             placeholderTextColor={"#999"}
             enterKeyHint="search"
             selectTextOnFocus={true}
+            clearButtonMode="always"
           />
         </View>
         <View

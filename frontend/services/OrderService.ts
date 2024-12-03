@@ -1,39 +1,52 @@
 import { create } from "zustand";
 import { Product } from "./ProductService";
 import { Customer } from "./CustomerService";
+import { numberWithCommas } from "@/utils/utils";
 
 export interface OrderItem {
   product: Product;
   count: number;
 }
 
+export interface DeliveryDetails {
+  isDeliver: boolean;
+  deliveryCost: number;
+  containerCount: number;
+}
+
 type OrderState = {
   orders: Map<string, OrderItem>;
   customer: Customer;
+  deliveryDetails: DeliveryDetails;
 };
 
 type OrderActions = {
   addItem: (item: OrderItem) => void;
   changeAmount: (id: string, amount: number) => void;
   updateCustomer: (customer: Customer) => void;
+  toggleIsDelivery: (value: boolean) => void;
+  changeDeliveryCost: (value: number) => void;
+  changeContainerCount: (value: number) => void;
 };
 
 function generateOrderText(order: OrderItem): string {
   const { product, count } = order;
   let text = `${product.label} = ${count} ${product.unit}\n`;
-  text += `${count} x ${product.kg} x ${product.price}  = ${
+  text += `${count} x ${product.kg} x ${product.price}\n= ${numberWithCommas(
     product.price * product.kg * count
-  }\n\n`;
+  )}\n\n`;
   return text;
 }
 
 export function generateOrderSummary(
   orders: Map<string, OrderItem>,
-  customer: Customer
+  customer: Customer,
+  deliveryDetails: DeliveryDetails
 ): string {
   const date = new Date();
   let text = "";
   let totalCost = 0;
+  let deliveryCost = 0;
   text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n`;
   if (customer.deliveryService.length > 0) {
     text += `ส่ง ${customer.deliveryService}\n\n`;
@@ -42,11 +55,29 @@ export function generateOrderSummary(
     text += generateOrderText(order);
     totalCost += order.product.price * order.count * order.product.kg;
   });
-  text += `รวม ${totalCost} บาท\n\n`;
+  if (deliveryDetails.isDeliver) {
+    if (deliveryDetails.deliveryCost > 0) {
+      text += "ค่าส่ง+";
+      deliveryCost = deliveryDetails.deliveryCost;
+    }
+    text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
+    if (deliveryCost > 0) {
+      text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
+    } else {
+      text += `80x${deliveryDetails.containerCount}\n`;
+    }
+    deliveryCost += 80;
+    deliveryCost *= deliveryDetails.containerCount;
+    totalCost += deliveryCost;
+    text += `=${numberWithCommas(deliveryCost)}\n\n`;
+  }
+  text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
   text += `ส่ง\n`;
-  text += `${customer.name}\n${customer.address}\n`;
+  text += `${customer.name} ${customer.address}\n`;
   text += `เบอร์ ${customer.phone}\n`;
-  text += `**นัดรับ ${customer.deliveryNote}\n`;
+  if (deliveryDetails.isDeliver && customer.deliveryNote.length > 0) {
+    text += `**${customer.deliveryNote}\n`;
+  }
   return text;
 }
 
@@ -59,6 +90,11 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     phone: "",
     deliveryNote: "",
     deliveryService: "",
+  },
+  deliveryDetails: {
+    isDeliver: false,
+    deliveryCost: 0,
+    containerCount: 0,
   },
   addItem: (item: OrderItem) => {
     set((state: OrderState) => {
@@ -87,6 +123,32 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
       state = { ...state, customer: customer };
       return state;
     });
+  },
+  toggleIsDelivery: () => {
+    set((state: OrderState) => ({
+      deliveryDetails: {
+        ...state.deliveryDetails,
+        isDeliver: !state.deliveryDetails.isDeliver,
+      },
+    }));
+  },
+  changeContainerCount: (value: number) => {
+    console.log(value);
+    set((state: OrderState) => ({
+      ...state,
+      deliveryDetails: {
+        ...state.deliveryDetails,
+        containerCount: value,
+      },
+    }));
+  },
+  changeDeliveryCost: (value: number) => {
+    set((state: OrderState) => ({
+      deliveryDetails: {
+        ...state.deliveryDetails,
+        deliveryCost: value,
+      },
+    }));
   },
 }));
 

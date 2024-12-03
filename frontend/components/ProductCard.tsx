@@ -6,6 +6,7 @@ import { Product } from "@/services/ProductService";
 type Props = {
   product: Product;
   callback: (product: Product) => void;
+  columnCount: number;
 };
 
 const styles = StyleSheet.create({
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.35,
     shadowRadius: 1.7,
-    flexBasis: "31%",
+    flexBasis: "23%",
     flexDirection: "column",
     flex: 1,
     flexGrow: 1,
@@ -41,10 +42,11 @@ const styles = StyleSheet.create({
   cardPrice: {
     fontSize: 12,
     textAlign: "right",
+    width: "100%",
   },
 });
 
-export default function ProductCard({ product, callback }: Props) {
+export default function ProductCard({ product, callback, columnCount = 3 }: Props) {
   const image_path = `${API_URL}/api/files/products/${product.id}/${product.image}`;
 
   const onProductPress = () => {
@@ -52,20 +54,27 @@ export default function ProductCard({ product, callback }: Props) {
   };
 
   return (
-    <View style={[styles.card]}>
+    <View style={[styles.card, { flexBasis: `${100 / columnCount - 1}%` }]}>
       <TouchableHighlight onPress={onProductPress} underlayColor="white">
         <View style={[styles.cardBody]}>
           <Image
             source={{ uri: image_path }}
             style={[styles.cardImage]}
             resizeMode="cover"
-            height={150}
+            height={400 / columnCount}
           />
-          <Text style={[styles.cardTitle]} ellipsizeMode="tail" numberOfLines={1}>
+          <Text
+            style={[styles.cardTitle, { fontSize: 16 - columnCount / 2 }]}
+            ellipsizeMode="tail"
+            numberOfLines={1}
+          >
             {product.label}
           </Text>
-          <Text style={[styles.cardPrice]}>
-            {product.price} บาท x {product.kg} กก
+          <Text
+            style={[styles.cardPrice, { fontSize: 16 - columnCount }]}
+            numberOfLines={1}
+          >
+            {product.price}x{product.kg}กก
           </Text>
         </View>
       </TouchableHighlight>

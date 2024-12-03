@@ -1,1 +1,1 @@
-export const API_URL = 'https://0303-184-22-104-57.ngrok-free.app';
+export const API_URL = "https://wasp-poetic-definitely.ngrok-free.app";

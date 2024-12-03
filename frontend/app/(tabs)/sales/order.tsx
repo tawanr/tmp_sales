@@ -10,13 +10,14 @@ import { API_URL } from "@/utils/constants";
 import { FontAwesome } from "@expo/vector-icons";
 import Clipboard from "@react-native-clipboard/clipboard";
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
   KeyboardAvoidingView,
   Pressable,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -137,16 +138,40 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
 };
 
 export default function Order() {
-  const { orders, customer } = useOrderStore(
-    useShallow((state) => ({ orders: state.orders, customer: state.customer }))
+  const { orders, customer, deliveryDetails } = useOrderStore(
+    useShallow((state) => ({
+      orders: state.orders,
+      customer: state.customer,
+      deliveryDetails: state.deliveryDetails,
+    }))
   );
-  const [summary, setSummary] = useState(generateOrderSummary(orders, customer));
+  const { toggleIsDelivery, changeContainerCount, changeDeliveryCost } =
+    useOrderStore();
+  const [summary, setSummary] = useState("");
+  useEffect(() => {
+    setSummary(generateOrderSummary(orders, customer, deliveryDetails));
+  }, [orders, customer, deliveryDetails]);
   const ordersList = Array.from(orders.values());
-  useOrderStore.subscribe((state) => {
-    setSummary(generateOrderSummary(state.orders, state.customer));
-  });
+  const updateContainerCount = (value: string) => {
+    let count = parseInt(value);
+    if (isNaN(count) || count < 0) {
+      count = 0;
+    }
+    changeContainerCount(count);
+  };
+  const updateDeliveryCost = (value: string) => {
+    let cost = parseFloat(value);
+    if (isNaN(cost) || cost < 0) {
+      cost = 0;
+    }
+    changeDeliveryCost(cost);
+  };
   return (
-    <KeyboardAvoidingView behavior="padding" style={[styles.container]}>
+    <KeyboardAvoidingView
+      behavior="padding"
+      style={[styles.container]}
+      keyboardVerticalOffset={90}
+    >
       <View style={[styles.customerDetails]}>
         <View>
           <Text>Name: </Text>
@@ -175,15 +200,12 @@ export default function Order() {
         keyExtractor={(item) => item.product.id}
         style={{
           width: "100%",
-          height: "100%",
-          flex: 1,
         }}
         contentContainerStyle={{
           width: "100%",
           alignItems: "center",
           justifyContent: "flex-start",
           flexDirection: "column",
-          flex: 1,
           padding: 6,
           rowGap: 6,
         }}
@@ -193,14 +215,73 @@ export default function Order() {
           borderBottomColor: "#eee",
           borderBottomWidth: 1,
           width: "90%",
-          marginVertical: 8,
           marginTop: 15,
         }}
       />
       <View
         style={{
+          width: "100%",
+          marginVertical: 0,
+          marginHorizontal: 15,
+          paddingHorizontal: 15,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={[styles.countControls, { marginRight: 0 }]}>
+            <Text>ขนส่ง</Text>
+            <Switch
+              value={deliveryDetails.isDeliver}
+              onValueChange={toggleIsDelivery}
+            />
+          </View>
+          <View style={[styles.countControls, { marginRight: 0 }]}>
+            <Text>ค่าขนส่ง</Text>
+            <TextInput
+              style={{ textAlign: "center", width: 50, borderWidth: 1, height: 30 }}
+              value={deliveryDetails.deliveryCost.toString()}
+              onChangeText={updateDeliveryCost}
+              keyboardType="numeric"
+              selectTextOnFocus={true}
+            />
+          </View>
+          <View style={[styles.countControls, { marginRight: 0 }]}>
+            <Pressable
+              onPress={() => {
+                if (deliveryDetails.containerCount === 0) {
+                  return;
+                }
+                changeContainerCount(deliveryDetails.containerCount - 1);
+              }}
+            >
+              <Text style={{ fontSize: 26 }}>-</Text>
+            </Pressable>
+            <TextInput
+              style={{ textAlign: "center", width: 30, borderWidth: 1, height: 30 }}
+              value={deliveryDetails.containerCount.toString()}
+              onChangeText={updateContainerCount}
+              keyboardType="numeric"
+              selectTextOnFocus={true}
+            />
+            <Pressable
+              onPress={() => {
+                changeContainerCount(deliveryDetails.containerCount + 1);
+              }}
+            >
+              <Text style={{ fontSize: 26 }}>+</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+      <View
+        style={{
           width: "90%",
-          marginVertical: 8,
+          marginBottom: 8,
           justifyContent: "center",
           alignItems: "center",
         }}
@@ -210,15 +291,17 @@ export default function Order() {
           value={summary}
           onChangeText={setSummary}
           style={{
-            width: "90%",
-            height: 200,
+            width: "100%",
+            height: 125,
             marginVertical: 8,
             borderWidth: 1,
             borderColor: "#eee",
             borderRadius: 10,
           }}
+          editable={false}
+          selectTextOnFocus={true}
         />
-        <View style={{ position: "absolute", top: 20, right: 30 }}>
+        <View style={{ position: "absolute", top: 20, right: 15 }}>
           {/* <Pressable onPress={() => Clipboard.setString(summary)}> */}
           <FontAwesome name="copy" size={20} color="#888" />
           {/* </Pressable> */}

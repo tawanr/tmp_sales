@@ -10,10 +10,11 @@ export interface Product {
 }
 
 export async function getProducts(search: string = ""): Promise<Product[]> {
-  let filters = {};
+  let filter = "is_active = true";
   if (search) {
-    filters = { filter: `label ~ '${search}'` };
+    filter += ` && label ~ '${search}'`;
   }
+  const filters = { filter: filter };
   const products = await pb.collection("products").getList<Product>(1, 20, filters);
   return products.items;
 }
