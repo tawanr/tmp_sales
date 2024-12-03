@@ -1,5 +1,15 @@
 import { Product } from "@/services/ProductService";
-import { Modal, Text, Image, StyleSheet, View, Pressable, TouchableWithoutFeedback, Button, TextInput } from "react-native";
+import {
+  Modal,
+  Text,
+  Image,
+  StyleSheet,
+  View,
+  Pressable,
+  TouchableWithoutFeedback,
+  Button,
+  TextInput,
+} from "react-native";
 import { API_URL } from "@/utils/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
@@ -14,26 +24,26 @@ const styles = StyleSheet.create({
   cardImage: {
     width: 300,
     height: 390,
-    resizeMode: 'cover',
+    resizeMode: "cover",
     borderRadius: 4,
   },
   detailsContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
     paddingVertical: 150,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: "flex-start",
+    alignItems: "center",
     padding: 10,
     elevation: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     shadowOpacity: 0.75,
     shadowRadius: 30,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -42,54 +52,54 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingBottom: 8,
     paddingTop: 5,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     padding: 5,
   },
   cancelButton: {
-    backgroundColor: '#f00',
+    backgroundColor: "#f00",
     borderRadius: 10,
-    color: '#f00',
+    color: "#f00",
     padding: 10,
   },
   countRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#eee',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#eee",
     marginTop: 6,
   },
   minusButton: {
-    backgroundColor: '#aaa',
+    backgroundColor: "#aaa",
     borderStartStartRadius: 10,
     borderEndStartRadius: 10,
     padding: 10,
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   plusButton: {
-    backgroundColor: '#aaa',
+    backgroundColor: "#aaa",
     borderStartEndRadius: 10,
     borderEndEndRadius: 10,
     padding: 10,
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   countText: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
-    width: '40%',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#000",
+    width: "40%",
+    textAlign: "center",
   },
 });
 
-export default function ProductDetails({product, close, callback}: Props) {
+export default function ProductDetails({ product, close, callback }: Props) {
   const image_path = `${API_URL}/api/files/products/${product.id}/${product.image}`;
   const [count, setCount] = useState(1);
   const addProduct = () => {
@@ -107,16 +117,28 @@ export default function ProductDetails({product, close, callback}: Props) {
             <Text style={[styles.title]}>{product.label}</Text>
             <Image source={{ uri: image_path }} style={[styles.cardImage]} />
             <View style={[styles.countRow]}>
-              <Pressable onPress={() => setCount(count - 1)} style={[styles.minusButton]}>
+              <Pressable
+                onPress={() => setCount(count - 1)}
+                style={[styles.minusButton]}
+              >
                 <Text style={[styles.countText]}>-</Text>
               </Pressable>
-              <TextInput style={[styles.countText]} value={count.toString()} onChangeText={convertCount} inputMode='numeric' returnKeyType="done" />
-              <Pressable onPress={() => setCount(count + 1)} style={[styles.plusButton]}>
+              <TextInput
+                style={[styles.countText]}
+                value={count.toString()}
+                onChangeText={convertCount}
+                inputMode="numeric"
+                returnKeyType="done"
+              />
+              <Pressable
+                onPress={() => setCount(count + 1)}
+                style={[styles.plusButton]}
+              >
                 <Text style={[styles.countText]}>+</Text>
               </Pressable>
             </View>
             <View style={[styles.buttonsRow]}>
-              <Button title="Cancel" onPress={close} color={'#f00'} />
+              <Button title="Cancel" onPress={close} color={"#f00"} />
               <Button title="Add" onPress={addProduct} />
             </View>
           </View>

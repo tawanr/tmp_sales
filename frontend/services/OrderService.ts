@@ -5,7 +5,7 @@ import { Customer } from "./CustomerService";
 export interface OrderItem {
   product: Product;
   count: number;
-};
+}
 
 type OrderState = {
   orders: Map<string, OrderItem>;
@@ -21,11 +21,16 @@ type OrderActions = {
 function generateOrderText(order: OrderItem): string {
   const { product, count } = order;
   let text = `${product.label} = ${count}\n`;
-  text += `${count} x ${product.kg} x ${product.price}  = ${product.price * product.kg * count}\n\n`;
+  text += `${count} x ${product.kg} x ${product.price}  = ${
+    product.price * product.kg * count
+  }\n\n`;
   return text;
 }
 
-export function generateOrderSummary(orders: Map<string, OrderItem>, customer: Customer): string {
+export function generateOrderSummary(
+  orders: Map<string, OrderItem>,
+  customer: Customer
+): string {
   const date = new Date();
   // const { orders, customer } = useOrderStore();
   let text = "";
@@ -89,6 +94,9 @@ export function changeItemAmount(id: string, amount: number) {
     return;
   }
   useOrderStore.setState((prev) => ({
-    orders: new Map<string, OrderItem>(prev.orders).set(id, { ...prev.orders.get(id)!, count: amount }),
-  }))
+    orders: new Map<string, OrderItem>(prev.orders).set(id, {
+      ...prev.orders.get(id)!,
+      count: amount,
+    }),
+  }));
 }

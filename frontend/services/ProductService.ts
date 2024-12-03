@@ -1,4 +1,4 @@
-import pb from '../utils/pocketbase';
+import pb from "../utils/pocketbase";
 
 export interface Product {
   id: string;
@@ -11,8 +11,8 @@ export interface Product {
 export async function getProducts(search: string = ""): Promise<Product[]> {
   let filters = {};
   if (search) {
-    filters = {"filter": `label ~ '${search}'`};
+    filters = { filter: `label ~ '${search}'` };
   }
-  const products = await pb.collection('products').getList<Product>(1, 20, filters);
+  const products = await pb.collection("products").getList<Product>(1, 20, filters);
   return products.items;
 }
