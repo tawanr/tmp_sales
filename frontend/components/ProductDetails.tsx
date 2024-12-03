@@ -24,7 +24,7 @@ type Props = {
 const styles = StyleSheet.create({
   cardImage: {
     width: 300,
-    height: 390,
+    flexGrow: 1,
     resizeMode: "cover",
     borderRadius: 4,
   },
@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
-    paddingVertical: 150,
+    paddingTop: 100,
+    paddingBottom: 280,
   },
   modalContainer: {
     flex: 1,
@@ -131,7 +132,7 @@ export default function ProductDetails({ product, close, callback }: Props) {
                 value={count.toString()}
                 onChangeText={convertCount}
                 inputMode="numeric"
-                returnKeyType="done"
+                // returnKeyType="done"
                 selectTextOnFocus={true}
               />
               <Pressable
