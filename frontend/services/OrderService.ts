@@ -103,3 +103,15 @@ export function changeItemAmount(id: string, amount: number) {
     }),
   }));
 }
+
+export function clearItems() {
+  useOrderStore.setState({ orders: new Map<string, OrderItem>() });
+}
+
+export function removeItem(id: string) {
+  useOrderStore.setState((prev) => {
+    const newOrder = new Map<string, OrderItem>(prev.orders);
+    newOrder.delete(id);
+    return { orders: newOrder };
+  });
+}

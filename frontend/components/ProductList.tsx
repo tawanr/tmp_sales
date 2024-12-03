@@ -17,6 +17,7 @@ import ProductDetails from "./ProductDetails";
 import { Link } from "expo-router";
 import OrderDetails from "./OrderDetails";
 import { useOrderStore } from "@/services/OrderService";
+import { FlatList } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -91,7 +92,9 @@ export default function ProductList({ columnCount = 3 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [orderModalVisible, setOrderModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const addItem = useOrderStore((state) => state.addItem);
+  const productCount = useOrderStore((state) => state.orders.size);
 
   useEffect(() => {
     getProducts().then((productList) => {
@@ -114,9 +117,11 @@ export default function ProductList({ columnCount = 3 }: Props) {
   };
 
   const reloadList = () => {
+    setRefreshing(true);
     getProducts(searchTerm).then((productList) => {
       setProducts(productList);
     });
+    setRefreshing(false);
   };
 
   let modalContent = null;
@@ -133,6 +138,43 @@ export default function ProductList({ columnCount = 3 }: Props) {
           callback={addProduct}
         />
       </TouchableOpacity>
+    );
+  }
+
+  let badge = null;
+  if (productCount > 0) {
+    badge = (
+      <View
+        style={{
+          position: "absolute",
+          bottom: -5,
+          left: -5,
+          borderRadius: 100,
+          backgroundColor: "#e00",
+          width: 20,
+          height: 20,
+          alignContent: "center",
+          justifyContent: "center",
+          flex: 1,
+          padding: "auto",
+          flexDirection: "row",
+        }}
+      >
+        <Text
+          style={{
+            color: "#fff",
+            width: "100%",
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignContent: "center",
+            marginLeft: 7,
+            marginTop: 1,
+          }}
+        >
+          {productCount}
+        </Text>
+      </View>
     );
   }
 
@@ -163,27 +205,30 @@ export default function ProductList({ columnCount = 3 }: Props) {
           selectTextOnFocus={true}
         />
       </View>
-      <ScrollView
-        keyboardShouldPersistTaps="never"
-        contentContainerStyle={{
-          flex: 1,
-          flexGrow: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <View style={[styles.listContainer]}>
-          {products.map((product, index) => {
-            return (
-              <ProductCard
-                key={product.id}
-                product={product}
-                callback={selectProductDetails}
-              />
-            );
-          })}
-        </View>
-      </ScrollView>
+      <View style={{ flex: 1, alignContent: "center" }}>
+        <FlatList
+          data={products}
+          renderItem={({ item }) => (
+            <ProductCard product={item} callback={selectProductDetails} />
+          )}
+          keyExtractor={(item) => item.id}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          contentContainerStyle={{
+            width: "100%",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            flexDirection: "column",
+            flex: 1,
+            padding: 6,
+          }}
+          numColumns={columnCount}
+          onRefresh={reloadList}
+          refreshing={refreshing}
+        />
+      </View>
       <View style={[styles.shoppingIconContainer]}>
         <Link href="/sales/order">
           <Image
@@ -191,6 +236,7 @@ export default function ProductList({ columnCount = 3 }: Props) {
             style={[styles.shoppingIcon]}
           />
         </Link>
+        {badge}
       </View>
     </SafeAreaView>
   );

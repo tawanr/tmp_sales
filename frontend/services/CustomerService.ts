@@ -1,4 +1,6 @@
+import { CustomerForm } from "@/components/CustomerForm";
 import pb from "@/utils/pocketbase";
+import { useOrderStore } from "./OrderService";
 
 export type Customer = {
   id: string;
@@ -18,4 +20,9 @@ export async function getCustomers(search: string = ""): Promise<Customer[]> {
   }
   const customers = await pb.collection("customers").getList<Customer>(1, 10, filters);
   return customers.items;
+}
+
+export async function createCustomer(customer: CustomerForm): Promise<string> {
+  const newCustomer = await pb.collection("customers").create(customer);
+  return newCustomer.id;
 }

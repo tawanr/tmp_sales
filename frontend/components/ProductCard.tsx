@@ -21,13 +21,13 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.35,
     shadowRadius: 1.7,
-    flexBasis: "48%",
-    height: "40%",
+    flexBasis: "31%",
+    flexDirection: "column",
+    flex: 1,
+    flexGrow: 1,
   },
   cardBody: {
     padding: 5,
-    flex: 1,
-    flexGrow: 1,
   },
   cardTitle: {
     fontSize: 14,
@@ -35,9 +35,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   cardImage: {
-    flex: 1,
-    width: "100%",
-    height: 150,
     resizeMode: "cover",
     borderRadius: 4,
   },
@@ -55,20 +52,23 @@ export default function ProductCard({ product, callback }: Props) {
   };
 
   return (
-    <TouchableHighlight
-      onPress={onProductPress}
-      style={[styles.card]}
-      underlayColor="white"
-    >
-      <View style={[styles.cardBody]}>
-        <Image source={{ uri: image_path }} style={[styles.cardImage]} />
-        <Text style={[styles.cardTitle]} ellipsizeMode="tail" numberOfLines={1}>
-          {product.label}
-        </Text>
-        <Text style={[styles.cardPrice]}>
-          {product.price} x {product.kg}
-        </Text>
-      </View>
-    </TouchableHighlight>
+    <View style={[styles.card]}>
+      <TouchableHighlight onPress={onProductPress} underlayColor="white">
+        <View style={[styles.cardBody]}>
+          <Image
+            source={{ uri: image_path }}
+            style={[styles.cardImage]}
+            resizeMode="cover"
+            height={150}
+          />
+          <Text style={[styles.cardTitle]} ellipsizeMode="tail" numberOfLines={1}>
+            {product.label}
+          </Text>
+          <Text style={[styles.cardPrice]}>
+            {product.price} บาท x {product.kg} กก
+          </Text>
+        </View>
+      </TouchableHighlight>
+    </View>
   );
 }

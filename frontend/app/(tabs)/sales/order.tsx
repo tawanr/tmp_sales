@@ -1,7 +1,9 @@
 import {
   changeItemAmount,
+  clearItems,
   generateOrderSummary,
   OrderItem,
+  removeItem,
   useOrderStore,
 } from "@/services/OrderService";
 import { API_URL } from "@/utils/constants";
@@ -96,6 +98,10 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
       <View style={[styles.countControls]}>
         <Pressable
           onPress={() => {
+            if (order.count == 1) {
+              removeItem(order.product.id);
+              return;
+            }
             changeItemAmount(order.product.id, order.count - 1);
           }}
         >
@@ -104,6 +110,19 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
         <TextInput
           style={{ textAlign: "center", width: 30, borderWidth: 1, height: 30 }}
           value={order.count.toString()}
+          onChangeText={(text) => {
+            let amount = parseInt(text);
+            if (amount < 1) {
+              removeItem(order.product.id);
+              return;
+            }
+            if (isNaN(amount)) {
+              amount = 1;
+            }
+            changeItemAmount(order.product.id, amount);
+          }}
+          keyboardType="number-pad"
+          selectTextOnFocus={true}
         />
         <Pressable
           onPress={() => {
@@ -203,6 +222,38 @@ export default function Order() {
           {/* <Pressable onPress={() => Clipboard.setString(summary)}> */}
           <FontAwesome name="copy" size={20} color="#888" />
           {/* </Pressable> */}
+        </View>
+      </View>
+      <View style={{ flexDirection: "row", columnGap: 10 }}>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#f00",
+            height: 35,
+            width: 100,
+            marginBottom: 10,
+            borderRadius: 6,
+          }}
+        >
+          <Pressable onPress={clearItems}>
+            <Text style={{ color: "#fff" }}>ล้าง</Text>
+          </Pressable>
+        </View>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#00d",
+            height: 35,
+            width: 100,
+            marginBottom: 10,
+            borderRadius: 6,
+          }}
+        >
+          <Pressable>
+            <Text style={{ color: "#fff" }}>บันทึก</Text>
+          </Pressable>
         </View>
       </View>
     </KeyboardAvoidingView>

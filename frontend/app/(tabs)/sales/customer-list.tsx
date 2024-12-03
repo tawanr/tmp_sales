@@ -1,7 +1,7 @@
 import { Customer, getCustomers } from "@/services/CustomerService";
 import { useOrderStore } from "@/services/OrderService";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -33,7 +33,10 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     width: "100%",
     height: 50,
-    padding: 6,
+    padding: 5,
+    flexDirection: "row",
+    columnGap: 6,
+    alignItems: "center",
   },
   searchBar: {
     width: "100%",
@@ -88,7 +91,6 @@ const styles = StyleSheet.create({
 const CustomerListItem = ({ customer }: { customer: Customer }) => {
   const { updateCustomer } = useOrderStore();
   const selectCustomer = () => {
-    console.log(customer);
     updateCustomer(customer);
     router.dismiss();
   };
@@ -119,25 +121,47 @@ const CustomerListItem = ({ customer }: { customer: Customer }) => {
 export default function CustomerList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
   const reloadList = () => {
+    setRefreshing(true);
     getCustomers(searchTerm).then((customerList) => {
       setCustomers(customerList);
-      console.log(customerList);
+      setRefreshing(false);
     });
   };
+  useEffect(() => {
+    reloadList();
+  }, []);
   return (
     <SafeAreaView style={[styles.container]}>
       <View style={[styles.searchBarContainer]}>
-        <TextInput
-          style={[styles.searchBar]}
-          placeholder="Search"
-          onChangeText={setSearchTerm}
-          onEndEditing={reloadList}
-          value={searchTerm}
-          placeholderTextColor={"#999"}
-          enterKeyHint="search"
-          selectTextOnFocus={true}
-        />
+        <View style={{ flexGrow: 1 }}>
+          <TextInput
+            style={[styles.searchBar]}
+            placeholder="Search"
+            onChangeText={setSearchTerm}
+            onEndEditing={reloadList}
+            value={searchTerm}
+            placeholderTextColor={"#999"}
+            enterKeyHint="search"
+            selectTextOnFocus={true}
+          />
+        </View>
+        <View
+          style={{
+            flexShrink: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            backgroundColor: "#00e",
+            paddingHorizontal: 10,
+            borderRadius: 6,
+          }}
+        >
+          <Pressable onPress={() => router.push("/sales/customer-create")}>
+            <Text style={{ color: "#fff" }}>เพิ่มลูกค้า</Text>
+          </Pressable>
+        </View>
       </View>
       <FlatList
         data={customers}
@@ -157,6 +181,8 @@ export default function CustomerList() {
           padding: 6,
           rowGap: 6,
         }}
+        onRefresh={reloadList}
+        refreshing={refreshing}
       />
     </SafeAreaView>
   );

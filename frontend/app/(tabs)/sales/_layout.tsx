@@ -7,6 +7,7 @@ export default function SalesLayout() {
       <Stack.Screen name="order" options={{ title: "Order" }} />
       <Stack.Screen name="customer" options={{ title: "Customer" }} />
       <Stack.Screen name="customer-list" options={{ title: "Customer" }} />
+      <Stack.Screen name="customer-create" options={{ title: "Customer" }} />
     </Stack>
   );
 }

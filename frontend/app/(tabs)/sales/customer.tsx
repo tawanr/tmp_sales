@@ -1,15 +1,8 @@
+import CustomerFormComponent, { CustomerForm } from "@/components/CustomerForm";
 import { useOrderStore } from "@/services/OrderService";
 import { Link, router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-
-type CustomerForm = {
-  name: string;
-  address: string;
-  phone: string;
-  deliveryNote: string;
-  deliveryService: string;
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -77,119 +70,13 @@ export default function Customer() {
           </View>
         </Pressable>
       </View>
-      <Controller
-        control={control}
-        name="name"
-        rules={{ required: true }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputRow]}>
-            <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Name:</Text>
-            </View>
-            <View style={[styles.inputField]}>
-              <TextInput
-                style={{ width: "100%" }}
-                placeholder="Name"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-              />
-            </View>
-          </View>
-        )}
-      />
-      {errors.name && <Text style={{ color: "red" }}>{errors.name.message}</Text>}
-      <Controller
-        control={control}
-        name="phone"
-        rules={{ required: true }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputRow]}>
-            <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Phone:</Text>
-            </View>
-            <View style={[styles.inputField]}>
-              <TextInput
-                style={{ width: "100%" }}
-                placeholder="Phone"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-              />
-            </View>
-          </View>
-        )}
-      />
-      <Controller
-        control={control}
-        name="deliveryService"
-        rules={{ required: true }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputRow]}>
-            <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Deliverer:</Text>
-            </View>
-            <View style={[styles.inputField]}>
-              <TextInput
-                style={{ width: "100%" }}
-                placeholder="Deliverer"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                numberOfLines={4}
-                multiline={true}
-              />
-            </View>
-          </View>
-        )}
-      />
-      <Controller
-        control={control}
-        name="address"
-        rules={{ required: true }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputRow]}>
-            <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Address:</Text>
-            </View>
-            <View style={[styles.inputField]}>
-              <TextInput
-                style={{ width: "100%" }}
-                placeholder="Address"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                numberOfLines={4}
-                multiline={true}
-              />
-            </View>
-          </View>
-        )}
-      />
-      <Controller
-        control={control}
-        name="deliveryNote"
-        rules={{ required: false }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputRow]}>
-            <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Note:</Text>
-            </View>
-            <View style={[styles.inputField]}>
-              <TextInput
-                style={{ width: "100%" }}
-                placeholder="Note"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                numberOfLines={4}
-                multiline={true}
-              />
-            </View>
-          </View>
-        )}
-      />
-      <Button title="Save" onPress={handleSubmit(onSubmit)} />
+      <View style={{ width: "100%", height: "100%" }}>
+        <CustomerFormComponent
+          control={control}
+          handleSubmit={handleSubmit}
+          onSubmit={onSubmit}
+        />
+      </View>
     </View>
   );
 }
