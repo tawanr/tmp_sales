@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { getProducts, Product } from '@/services/ProductService';
-import { SafeAreaView, View, StyleSheet, TextInput, Modal, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, StyleSheet, TextInput, Modal, TouchableOpacity, Pressable, Text, Image } from 'react-native';
 import ProductCard from './ProductCard';
 import ProductDetails from './ProductDetails';
+import { Link } from 'expo-router';
+import OrderDetails from './OrderDetails';
+import { useOrderStore } from '@/services/OrderService';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,6 +44,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
+  shoppingIconContainer: {
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    right: 15,
+    bottom: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 100,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  shoppingIcon: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    padding: 5,
+  }
 });
 
 type Props = {
@@ -52,6 +79,8 @@ export default function ProductList({rowCount = 3}: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [orderModalVisible, setOrderModalVisible] = useState(false);
+  const addItem = useOrderStore((state) => state.addItem);
 
   useEffect(() => {
     getProducts().then((productList) => {
@@ -70,8 +99,7 @@ export default function ProductList({rowCount = 3}: Props) {
   };
 
   const addProduct = (product: Product, count: number) => {
-    console.log(JSON.stringify(product));
-    console.log(count);
+    addItem({ product, count });
   };
 
   const reloadList = () => {
@@ -94,6 +122,9 @@ export default function ProductList({rowCount = 3}: Props) {
       <Modal visible={modalVisible} onRequestClose={() => setModalVisible(false)} transparent={true}>
         {modalContent}
       </Modal>
+      <Modal visible={orderModalVisible} onRequestClose={() => setOrderModalVisible(false)}>
+        <OrderDetails />
+      </Modal>
       <View style={[styles.searchBarContainer]}>
         <TextInput style={[styles.searchBar]} placeholder="Search" onChangeText={setSearchTerm} onEndEditing={reloadList} value={searchTerm} placeholderTextColor={'#999'} />
       </View>
@@ -103,6 +134,11 @@ export default function ProductList({rowCount = 3}: Props) {
             return <ProductCard key={product.id} product={product} callback={selectProductDetails} />;
           })}
         </View>
+      </View>
+      <View style={[styles.shoppingIconContainer]}>
+        <Link href="/order">
+          <Image source={require('../assets/images/shopping-cart.png')} style={[styles.shoppingIcon]} />
+        </Link>
       </View>
     </SafeAreaView>
   );
