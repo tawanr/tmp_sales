@@ -174,13 +174,13 @@ export default function Order() {
     >
       <View style={[styles.customerDetails]}>
         <View>
-          <Text>Name: </Text>
-          <Text style={{ fontWeight: "bold" }}>{customer.name}</Text>
+          <Text>ชื่อลูกค้า: </Text>
+          <Text style={{ fontWeight: "bold" }}>{customer.name || "-"}</Text>
         </View>
         <View>
           <Link href="/sales/customer">
             <View style={[styles.customerEditButton]}>
-              <Text style={{ color: "#fff" }}>Edit</Text>
+              <Text style={{ color: "#fff" }}>แก้ไข</Text>
             </View>
           </Link>
         </View>
@@ -193,7 +193,7 @@ export default function Order() {
           marginVertical: 8,
         }}
       />
-      <Text style={{ marginBottom: 5 }}>รายการสินค้า</Text>
+      <Text style={{ marginBottom: 5, fontWeight: "bold" }}>รายการสินค้า</Text>
       <FlatList
         data={ordersList}
         renderItem={({ item }) => <OrderListItem order={item} />}

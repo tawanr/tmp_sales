@@ -120,6 +120,7 @@ export default function ProductDetails({ product, close, callback }: Props) {
         <View style={[styles.modalContainer]}>
           <View>
             <Text style={[styles.title]}>{product.label}</Text>
+            <Image source={{ uri: image_path }} style={[styles.cardImage]} />
             <View style={[styles.countRow]}>
               <Pressable
                 onPress={() => setCount(count - 1)}
@@ -142,7 +143,6 @@ export default function ProductDetails({ product, close, callback }: Props) {
                 <Text style={[styles.countText]}>+</Text>
               </Pressable>
             </View>
-            <Image source={{ uri: image_path }} style={[styles.cardImage]} />
             <View style={[styles.buttonsRow]}>
               <Button title="Cancel" onPress={close} color={"#f00"} />
               <Button title="Add" onPress={addProduct} />

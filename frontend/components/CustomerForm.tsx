@@ -72,6 +72,7 @@ export default function CustomerFormComponent({
               <TextInput
                 style={{ width: "100%" }}
                 placeholder="Name"
+                placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -93,6 +94,7 @@ export default function CustomerFormComponent({
               <TextInput
                 style={{ width: "100%" }}
                 placeholder="Phone"
+                placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -104,7 +106,7 @@ export default function CustomerFormComponent({
       <Controller
         control={control}
         name="deliveryService"
-        rules={{ required: true }}
+        rules={{ required: false }}
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
@@ -114,6 +116,7 @@ export default function CustomerFormComponent({
               <TextInput
                 style={{ width: "100%" }}
                 placeholder="Deliverer"
+                placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -127,7 +130,7 @@ export default function CustomerFormComponent({
       <Controller
         control={control}
         name="address"
-        rules={{ required: true }}
+        rules={{ required: false }}
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
@@ -137,6 +140,7 @@ export default function CustomerFormComponent({
               <TextInput
                 style={{ width: "100%" }}
                 placeholder="Address"
+                placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -160,6 +164,7 @@ export default function CustomerFormComponent({
               <TextInput
                 style={{ width: "100%" }}
                 placeholder="Note"
+                placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}

@@ -133,7 +133,6 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     }));
   },
   changeContainerCount: (value: number) => {
-    console.log(value);
     set((state: OrderState) => ({
       ...state,
       deliveryDetails: {
