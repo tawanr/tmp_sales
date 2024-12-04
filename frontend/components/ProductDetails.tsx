@@ -6,7 +6,6 @@ import {
   StyleSheet,
   View,
   Pressable,
-  TouchableWithoutFeedback,
   Button,
   TextInput,
   Keyboard,

@@ -1,5 +1,4 @@
-import pb from "@/utils/pocketbase";
-import { router } from "expo-router";
+import { PRIMARY_LIGHT } from "@/utils/constants";
 import { Image, View } from "react-native";
 
 export default function Index() {
@@ -9,7 +8,7 @@ export default function Index() {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#11e",
+        backgroundColor: PRIMARY_LIGHT,
       }}
     >
       <Image
