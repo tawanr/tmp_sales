@@ -7,14 +7,8 @@ export default function RootLayout() {
     return <Redirect href="/login" />;
   }
   return (
-    <Stack
-      screenOptions={{
-        statusBarBackgroundColor: PRIMARY_LIGHT,
-        navigationBarColor: PRIMARY_LIGHT,
-      }}
-    >
+    <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="login" options={{ headerShown: false }} />
     </Stack>
   );
 }

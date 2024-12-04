@@ -1,3 +1,4 @@
+import { useUserStore } from "@/services/UserService";
 import { PRIMARY_DARK, PRIMARY_LIGHT } from "@/utils/constants";
 import pb from "@/utils/pocketbase";
 import { router } from "expo-router";
@@ -41,11 +42,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState("");
+  const { setUser } = useUserStore();
 
   const login = () => {
     const authData = pb.collection("users").authWithPassword(email, password);
     authData
       .then((data) => {
+        setUser({ id: data.record.id, name: data.record.name });
         router.push("/");
       })
       .catch((error) => {

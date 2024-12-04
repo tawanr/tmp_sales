@@ -2,6 +2,19 @@ import { create } from "zustand";
 import { Product } from "./ProductService";
 import { Customer } from "./CustomerService";
 import { numberWithCommas } from "@/utils/utils";
+import pb from "@/utils/pocketbase";
+import { User } from "./UserService";
+
+export type CompleteOrder = {
+  customer: string;
+  orderDetails: object;
+  customerDetails: object;
+  summary: string;
+  isEnable: boolean;
+  products: string[];
+  deliveryDetails: object;
+  user: string;
+};
 
 export interface OrderItem {
   product: Product;
@@ -81,16 +94,20 @@ export function generateOrderSummary(
   return text;
 }
 
-export const useOrderStore = create<OrderState & OrderActions>((set) => ({
-  orders: new Map<string, OrderItem>(),
-  customer: {
+export function createEmptyCustomer(): Customer {
+  return {
     id: "",
     name: "",
     address: "",
     phone: "",
     deliveryNote: "",
     deliveryService: "",
-  },
+  };
+}
+
+export const useOrderStore = create<OrderState & OrderActions>((set) => ({
+  orders: new Map<string, OrderItem>(),
+  customer: createEmptyCustomer(),
   deliveryDetails: {
     isDeliver: false,
     deliveryCost: 0,
@@ -175,4 +192,37 @@ export function removeItem(id: string) {
     newOrder.delete(id);
     return { orders: newOrder };
   });
+}
+
+export function resetDeliveryDetails() {
+  const { toggleIsDelivery, changeContainerCount, changeDeliveryCost } =
+    useOrderStore();
+  toggleIsDelivery(true);
+  changeContainerCount(0);
+  changeDeliveryCost(0);
+}
+
+export function finishOrder(
+  orders: Map<string, OrderItem>,
+  customer: Customer,
+  deliveryDetails: DeliveryDetails,
+  summary: string,
+  user: User
+) {
+  const completeOrder: CompleteOrder = {
+    customer: customer.id,
+    orderDetails: Array.from(orders.values()),
+    customerDetails: customer,
+    summary: summary,
+    isEnable: true,
+    products: Array.from(orders.keys()),
+    deliveryDetails: deliveryDetails,
+    user: user.id,
+  };
+  return createOrder(completeOrder);
+}
+
+export async function createOrder(order: CompleteOrder) {
+  const newOrder = await pb.collection("orders").create(order);
+  return newOrder.id;
 }

@@ -1,11 +1,15 @@
 import {
   changeItemAmount,
   clearItems,
+  createEmptyCustomer,
+  finishOrder,
   generateOrderSummary,
   OrderItem,
   removeItem,
+  resetDeliveryDetails,
   useOrderStore,
 } from "@/services/OrderService";
+import { useUserStore } from "@/services/UserService";
 import { API_URL } from "@/utils/constants";
 import { FontAwesome } from "@expo/vector-icons";
 import Clipboard from "@react-native-clipboard/clipboard";
@@ -145,13 +149,12 @@ export default function Order() {
       deliveryDetails: state.deliveryDetails,
     }))
   );
-  const { toggleIsDelivery, changeContainerCount, changeDeliveryCost } =
+  const { toggleIsDelivery, changeContainerCount, changeDeliveryCost, updateCustomer } =
     useOrderStore();
+  const { user } = useUserStore();
   const [summary, setSummary] = useState("");
-  useEffect(() => {
-    setSummary(generateOrderSummary(orders, customer, deliveryDetails));
-  }, [orders, customer, deliveryDetails]);
   const ordersList = Array.from(orders.values());
+
   const updateContainerCount = (value: string) => {
     let count = parseInt(value);
     if (isNaN(count) || count < 0) {
@@ -159,6 +162,7 @@ export default function Order() {
     }
     changeContainerCount(count);
   };
+
   const updateDeliveryCost = (value: string) => {
     let cost = parseFloat(value);
     if (isNaN(cost) || cost < 0) {
@@ -166,6 +170,24 @@ export default function Order() {
     }
     changeDeliveryCost(cost);
   };
+
+  const onSubmit = () => {
+    const sentOrder = finishOrder(orders, customer, deliveryDetails, summary, user);
+    sentOrder
+      .then(() => {
+        clearItems();
+        updateCustomer(createEmptyCustomer());
+        resetDeliveryDetails();
+      })
+      .catch((errors) => {
+        console.error(errors);
+      });
+  };
+
+  useEffect(() => {
+    setSummary(generateOrderSummary(orders, customer, deliveryDetails));
+  }, [orders, customer, deliveryDetails]);
+
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -334,8 +356,8 @@ export default function Order() {
             borderRadius: 6,
           }}
         >
-          <Pressable>
-            <Text style={{ color: "#fff" }}>บันทึก</Text>
+          <Pressable onPress={onSubmit}>
+            <Text style={{ color: "#fff" }}>เสร็จสิ้น</Text>
           </Pressable>
         </View>
       </View>
