@@ -45,7 +45,7 @@ type OrderActions = {
 function generateOrderText(order: OrderItem): string {
   const { product, count } = order;
   let text = `${product.label} = ${count} ${product.unit}\n`;
-  text += `${count} x ${product.kg} x ${product.price}\n= ${numberWithCommas(
+  text += `${count}x${product.kg}x${product.price}\n=${numberWithCommas(
     product.price * product.kg * count
   )}\n\n`;
   return text;
@@ -62,28 +62,26 @@ export function generateOrderSummary(
   let deliveryCost = 0;
   text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n`;
   if (customer.deliveryService.length > 0) {
-    text += `ส่ง ${customer.deliveryService}\n\n`;
+    text += `ส่ง ${customer.deliveryService}\n`;
   }
   orders.forEach((order) => {
     text += generateOrderText(order);
     totalCost += order.product.price * order.count * order.product.kg;
   });
-  if (deliveryDetails.isDeliver) {
-    if (deliveryDetails.deliveryCost > 0) {
-      text += "ค่าส่ง+";
-      deliveryCost = deliveryDetails.deliveryCost;
-    }
-    text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
-    if (deliveryCost > 0) {
-      text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
-    } else {
-      text += `80x${deliveryDetails.containerCount}\n`;
-    }
-    deliveryCost += 80;
-    deliveryCost *= deliveryDetails.containerCount;
-    totalCost += deliveryCost;
-    text += `=${numberWithCommas(deliveryCost)}\n\n`;
+  if (deliveryDetails.deliveryCost > 0 && deliveryDetails.isDeliver) {
+    text += "ค่าส่ง+";
+    deliveryCost = deliveryDetails.deliveryCost;
   }
+  text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
+  if (deliveryCost > 0 && deliveryDetails.isDeliver) {
+    text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
+  } else {
+    text += `80x${deliveryDetails.containerCount}\n`;
+  }
+  deliveryCost += 80;
+  deliveryCost *= deliveryDetails.containerCount;
+  totalCost += deliveryCost;
+  text += `=${numberWithCommas(deliveryCost)}\n\n`;
   text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
   text += `ส่ง\n`;
   text += `${customer.name} ${customer.address}\n`;
