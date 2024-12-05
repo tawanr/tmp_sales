@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   cardBody: {
-    padding: 5,
+    padding: 0,
   },
   cardTitle: {
     fontSize: 12,
