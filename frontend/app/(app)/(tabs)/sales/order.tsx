@@ -12,10 +12,10 @@ import {
 import { useUserStore } from "@/services/UserService";
 import { API_URL } from "@/utils/constants";
 import { FontAwesome } from "@expo/vector-icons";
-import Clipboard from "@react-native-clipboard/clipboard";
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Animated,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -24,9 +24,11 @@ import {
   Switch,
   Text,
   TextInput,
+  useAnimatedValue,
   View,
 } from "react-native";
 import { useShallow } from "zustand/react/shallow";
+import * as Clipboard from "expo-clipboard";
 
 const styles = StyleSheet.create({
   container: {
@@ -78,6 +80,7 @@ const styles = StyleSheet.create({
 
 const OrderListItem = ({ order }: { order: OrderItem }) => {
   const image_path = `${API_URL}/api/files/products/${order.product.id}/${order.product.image}`;
+
   return (
     <View style={[styles.orderCard]}>
       <View
@@ -154,6 +157,7 @@ export default function Order() {
   const { user } = useUserStore();
   const [summary, setSummary] = useState("");
   const ordersList = Array.from(orders.values());
+  const copiedOpacity = useAnimatedValue(0);
 
   const updateContainerCount = (value: string) => {
     let count = parseInt(value);
@@ -182,6 +186,18 @@ export default function Order() {
       .catch((errors) => {
         console.error(errors);
       });
+  };
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(summary);
+    copiedOpacity.setValue(1);
+    setTimeout(() => {
+      Animated.timing(copiedOpacity, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, 2500);
   };
 
   useEffect(() => {
@@ -323,10 +339,21 @@ export default function Order() {
           editable={false}
           selectTextOnFocus={true}
         />
-        <View style={{ position: "absolute", top: 20, right: 15 }}>
-          {/* <Pressable onPress={() => Clipboard.setString(summary)}> */}
-          <FontAwesome name="copy" size={20} color="#888" />
-          {/* </Pressable> */}
+        <View
+          style={{ position: "absolute", top: 20, right: 15, flexDirection: "row" }}
+        >
+          <Animated.Text
+            style={{
+              marginRight: 5,
+              color: "#999",
+              opacity: copiedOpacity,
+            }}
+          >
+            คัดลอก
+          </Animated.Text>
+          <Pressable onPress={copyToClipboard}>
+            <FontAwesome name="copy" size={20} color="#888" />
+          </Pressable>
         </View>
       </View>
       <View style={{ flexDirection: "row", columnGap: 10 }}>
