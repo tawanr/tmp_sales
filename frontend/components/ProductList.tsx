@@ -95,12 +95,25 @@ export default function ProductList({ columnCount = 3 }: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const addItem = useOrderStore((state) => state.addItem);
   const productCount = useOrderStore((state) => state.orders.size);
+  const [pageNum, setPageNum] = useState(1);
+  const [productSearch, setProductSearch] = useState("");
 
   useEffect(() => {
-    getProducts().then((productList) => {
-      setProducts(productList);
-    });
-  }, []);
+    setRefreshing(true);
+    getProducts(productSearch, pageNum)
+      .then((productList) => {
+        if (pageNum > 1) {
+          setProducts(products.concat(productList));
+        } else {
+          setProducts(productList);
+        }
+        setRefreshing(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setRefreshing(false);
+      });
+  }, [pageNum, productSearch]);
 
   const selectProductDetails = (product: Product) => {
     setModalVisible(true);
@@ -117,11 +130,16 @@ export default function ProductList({ columnCount = 3 }: Props) {
   };
 
   const reloadList = () => {
-    setRefreshing(true);
-    getProducts(searchTerm).then((productList) => {
-      setProducts(productList);
-    });
-    setRefreshing(false);
+    setPageNum(1);
+  };
+
+  const submitSearch = () => {
+    setPageNum(1);
+    setProductSearch(searchTerm);
+  };
+
+  const scrollLoadingProducts = () => {
+    setPageNum(pageNum + 1);
   };
 
   let modalContent = null;
@@ -198,7 +216,7 @@ export default function ProductList({ columnCount = 3 }: Props) {
           style={[styles.searchBar]}
           placeholder="Search"
           onChangeText={setSearchTerm}
-          onEndEditing={reloadList}
+          onSubmitEditing={submitSearch}
           value={searchTerm}
           placeholderTextColor={"#999"}
           enterKeyHint="search"
@@ -231,6 +249,9 @@ export default function ProductList({ columnCount = 3 }: Props) {
           numColumns={columnCount}
           onRefresh={reloadList}
           refreshing={refreshing}
+          onEndReached={scrollLoadingProducts}
+          // onEndReachedThreshold={1}
+          extraData={pageNum}
         />
       </View>
       <View style={[styles.shoppingIconContainer]}>

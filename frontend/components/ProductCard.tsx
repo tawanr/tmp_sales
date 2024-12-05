@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   cardTitle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     paddingBottom: 4,
   },
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   cardPrice: {
-    fontSize: 12,
+    fontSize: 10,
     textAlign: "right",
     width: "100%",
   },
@@ -64,14 +64,14 @@ export default function ProductCard({ product, callback, columnCount = 3 }: Prop
             height={400 / columnCount}
           />
           <Text
-            style={[styles.cardTitle, { fontSize: 16 - columnCount / 2 }]}
+            style={[styles.cardTitle, { fontSize: 16 - columnCount }]}
             ellipsizeMode="tail"
-            numberOfLines={1}
+            numberOfLines={2}
           >
             {product.label}
           </Text>
           <Text
-            style={[styles.cardPrice, { fontSize: 16 - columnCount }]}
+            style={[styles.cardPrice, { fontSize: 14 - columnCount }]}
             numberOfLines={1}
           >
             {product.price}x{product.kg}กก
