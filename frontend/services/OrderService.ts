@@ -92,6 +92,12 @@ export function generateOrderSummary(
   return text;
 }
 
+export function generateWithdrawalSummary(orders: Map<string, OrderItem>, customer: Customer, deliveryDetails: DeliveryDetails): string {
+  let text = "";
+  let totalCost = 0;
+  return text;
+}
+
 export function createEmptyCustomer(): Customer {
   return {
     id: "",

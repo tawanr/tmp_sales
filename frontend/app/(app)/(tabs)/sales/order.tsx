@@ -10,9 +10,9 @@ import {
   useOrderStore,
 } from "@/services/OrderService";
 import { useUserStore } from "@/services/UserService";
-import { API_URL } from "@/utils/constants";
+import { API_URL, PRIMARY_DARK, PRIMARY_LIGHT } from "@/utils/constants";
 import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Animated,
@@ -75,6 +75,25 @@ const styles = StyleSheet.create({
     margin: 10,
     marginRight: 25,
     columnGap: 15,
+  },
+  optionsDialog: {
+    width: 200,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    zIndex: 100,
+    padding: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 5,
+    right: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
   },
 });
 
@@ -158,6 +177,9 @@ export default function Order() {
   const [summary, setSummary] = useState("");
   const ordersList = Array.from(orders.values());
   const copiedOpacity = useAnimatedValue(0);
+  const [isOptionsOpen, setOptionsOpen] = useState(false);
+  const [orderType, setOrderType] = useState(false);
+  const [packageType, setPackageType] = useState(false);
 
   const updateContainerCount = (value: string) => {
     let count = parseInt(value);
@@ -200,6 +222,10 @@ export default function Order() {
     }, 2500);
   };
 
+  const toggleOptionsDialog = () => {
+    setOptionsOpen(!isOptionsOpen);
+  };
+
   useEffect(() => {
     setSummary(generateOrderSummary(orders, customer, deliveryDetails));
   }, [orders, customer, deliveryDetails]);
@@ -210,6 +236,35 @@ export default function Order() {
       style={[styles.container]}
       keyboardVerticalOffset={90}
     >
+      <Stack.Screen
+        options={{
+          headerRight: () => <Pressable onPress={toggleOptionsDialog} style={{ margin: 5 }}><FontAwesome name="bars" size={20} color="#222" /></Pressable>,
+        }} />
+      <View style={[styles.optionsDialog, { opacity: isOptionsOpen ? 1 : 0 }]}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <Text style={{ fontWeight: "bold" }}>ตัวเลือก</Text>
+        </View>
+        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <Text style={{ color: orderType ? "#aaa" : "#222" }}>สินค้า</Text>
+          <Switch
+            trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
+            value={orderType}
+            onValueChange={() => setOrderType(!orderType)}
+            ios_backgroundColor={PRIMARY_DARK}
+          />
+          <Text style={{ color: !orderType ? "#aaa" : "#222" }}>เบิกสินค้า</Text>
+        </View>
+        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <Text style={{ color: packageType ? "#aaa" : "#222" }}>โฟม</Text>
+          <Switch
+            trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
+            value={packageType}
+            onValueChange={() => setPackageType(!packageType)}
+            ios_backgroundColor={PRIMARY_DARK}
+          />
+          <Text style={{ color: !packageType ? "#aaa" : "#222" }}>ถุงดำ</Text>
+        </View>
+      </View>
       <View style={[styles.customerDetails]}>
         <View>
           <Text>ชื่อลูกค้า: </Text>
