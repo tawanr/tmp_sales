@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableHighlight, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableHighlight, Alert } from "react-native";
 import { API_URL } from "@/utils/constants";
 import { Product } from "@/services/ProductService";
+import { Image } from "expo-image";
 
 type Props = {
   product: Product;
@@ -59,9 +60,9 @@ export default function ProductCard({ product, callback, columnCount = 3 }: Prop
         <View style={[styles.cardBody]}>
           <Image
             source={{ uri: image_path }}
-            style={[styles.cardImage]}
-            resizeMode="cover"
-            height={400 / columnCount}
+            style={[styles.cardImage, { height: 400 / columnCount }]}
+            contentFit="cover"
+            cachePolicy="disk"
           />
           <Text
             style={[styles.cardTitle, { fontSize: 16 - columnCount }]}

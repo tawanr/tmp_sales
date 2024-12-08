@@ -66,12 +66,12 @@ export default function CustomerFormComponent({
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Name:</Text>
+              <Text style={[styles.inputLabel]}>ชื่อ:</Text>
             </View>
             <View style={[styles.inputField]}>
               <TextInput
                 style={{ width: "100%" }}
-                placeholder="Name"
+                placeholder="ชื่อ"
                 placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
@@ -88,12 +88,12 @@ export default function CustomerFormComponent({
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Phone:</Text>
+              <Text style={[styles.inputLabel]}>เบอร์:</Text>
             </View>
             <View style={[styles.inputField]}>
               <TextInput
                 style={{ width: "100%" }}
-                placeholder="Phone"
+                placeholder="เบอร์"
                 placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
@@ -110,12 +110,12 @@ export default function CustomerFormComponent({
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Deliverer:</Text>
+              <Text style={[styles.inputLabel]}>สายรถขนส่ง:</Text>
             </View>
             <View style={[styles.inputField]}>
               <TextInput
                 style={{ width: "100%" }}
-                placeholder="Deliverer"
+                placeholder="สายรถขนส่ง"
                 placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
@@ -134,12 +134,12 @@ export default function CustomerFormComponent({
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Address:</Text>
+              <Text style={[styles.inputLabel]}>ที่อยู่:</Text>
             </View>
             <View style={[styles.inputField]}>
               <TextInput
                 style={{ width: "100%" }}
-                placeholder="Address"
+                placeholder="ที่อยู่"
                 placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
@@ -158,12 +158,12 @@ export default function CustomerFormComponent({
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>Note:</Text>
+              <Text style={[styles.inputLabel]}>รายละเอียด:</Text>
             </View>
             <View style={[styles.inputField]}>
               <TextInput
                 style={{ width: "100%" }}
-                placeholder="Note"
+                placeholder="รายละเอียด"
                 placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
@@ -175,7 +175,7 @@ export default function CustomerFormComponent({
           </View>
         )}
       />
-      <Button title="Save" onPress={handleSubmit(onSubmit)} />
+      <Button title="บันทึก" onPress={handleSubmit(onSubmit)} />
     </View>
   );
 }

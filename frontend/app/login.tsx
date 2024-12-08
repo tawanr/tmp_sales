@@ -1,4 +1,4 @@
-import { useUserStore } from "@/services/UserService";
+import { checkAuth, useUserStore } from "@/services/UserService";
 import { PRIMARY_DARK, PRIMARY_LIGHT } from "@/utils/constants";
 import pb from "@/utils/pocketbase";
 import { router } from "expo-router";
@@ -31,12 +31,6 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-
-const checkAuth = () => {
-  if (pb.authStore.isValid) {
-    router.push("/");
-  }
-};
 
 export default function Login() {
   const [email, setEmail] = useState("");

@@ -139,6 +139,7 @@ export default function ProductList({ columnCount = 3 }: Props) {
   };
 
   const scrollLoadingProducts = () => {
+    if (products.length < 30) return;
     setPageNum(pageNum + 1);
   };
 
