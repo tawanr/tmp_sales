@@ -27,10 +27,17 @@ export interface DeliveryDetails {
   containerCount: number;
 }
 
+export interface OrderOptions {
+  isWithoutDetails: boolean;
+  orderType: boolean;
+  packageType: boolean;
+}
+
 type OrderState = {
   orders: Map<string, OrderItem>;
   customer: Customer;
   deliveryDetails: DeliveryDetails;
+  orderOptions: OrderOptions;
 };
 
 type OrderActions = {
@@ -40,6 +47,9 @@ type OrderActions = {
   toggleIsDelivery: (value: boolean) => void;
   changeDeliveryCost: (value: number) => void;
   changeContainerCount: (value: number) => void;
+  toggleIsWithoutDetails: () => void;
+  toggleOrderType: () => void;
+  togglePackageType: () => void;
 };
 
 function generateOrderText(order: OrderItem): string {
@@ -54,15 +64,19 @@ function generateOrderText(order: OrderItem): string {
 export function generateOrderSummary(
   orders: Map<string, OrderItem>,
   customer: Customer,
-  deliveryDetails: DeliveryDetails
+  deliveryDetails: DeliveryDetails,
+  orderOptions: OrderOptions
 ): string {
   const date = new Date();
+  const { isWithoutDetails, orderType, packageType } = orderOptions;
   let text = "";
   let totalCost = 0;
   let deliveryCost = 0;
-  text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n`;
-  if (customer.deliveryService.length > 0) {
-    text += `ส่ง ${customer.deliveryService}\n`;
+  if (!isWithoutDetails) {
+    text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n`;
+    if (customer.deliveryService.length > 0) {
+      text += `ส่ง ${customer.deliveryService}\n`;
+    }
   }
   orders.forEach((order) => {
     text += generateOrderText(order);
@@ -72,29 +86,54 @@ export function generateOrderSummary(
     text += "ค่าส่ง+";
     deliveryCost = deliveryDetails.deliveryCost;
   }
-  text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
-  if (deliveryCost > 0 && deliveryDetails.isDeliver) {
-    text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
+  if (!packageType) {
+    text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
+    if (deliveryCost > 0 && deliveryDetails.isDeliver) {
+      text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
+    } else {
+      text += `80x${deliveryDetails.containerCount}\n`;
+    }
+    deliveryCost += 80;
   } else {
-    text += `80x${deliveryDetails.containerCount}\n`;
+    text += `ค่าถุงดำ ${deliveryDetails.containerCount} ใบ\n`;
+    if (deliveryCost > 0 && deliveryDetails.isDeliver) {
+      text += `(${deliveryCost}+10)x${deliveryDetails.containerCount}\n`;
+    } else {
+      text += `10x${deliveryDetails.containerCount}\n`;
+    }
+    deliveryCost += 10;
   }
-  deliveryCost += 80;
   deliveryCost *= deliveryDetails.containerCount;
   totalCost += deliveryCost;
   text += `=${numberWithCommas(deliveryCost)}\n\n`;
   text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
-  text += `ส่ง\n`;
-  text += `${customer.name} ${customer.address}\n`;
-  text += `เบอร์ ${customer.phone}\n`;
-  if (deliveryDetails.isDeliver && customer.deliveryNote.length > 0) {
-    text += `**${customer.deliveryNote}\n`;
+  if (!isWithoutDetails) {
+    text += `ส่ง\n`;
+    text += `${customer.name} ${customer.address}\n`;
+    text += `เบอร์ ${customer.phone}\n`;
+    if (deliveryDetails.isDeliver && customer.deliveryNote.length > 0) {
+      text += `**${customer.deliveryNote}\n`;
+    }
   }
   return text;
 }
 
-export function generateWithdrawalSummary(orders: Map<string, OrderItem>, customer: Customer, deliveryDetails: DeliveryDetails): string {
+export function generateWithdrawalSummary(
+  orders: Map<string, OrderItem>,
+  customer: Customer,
+  deliveryDetails: DeliveryDetails,
+  orderOptions: OrderOptions
+): string {
+  const date = new Date();
   let text = "";
-  let totalCost = 0;
+  const { isWithoutDetails } = orderOptions;
+  if (!isWithoutDetails) {
+    text += `เบิก ${date.getDate()}/${date.getMonth() + 1}\n`;
+    text += `ทะเบียน ${customer.carRegistration}\n`;
+  }
+  orders.forEach((order) => {
+    text += `${order.product.lotNumber}\n${order.product.label}\n${order.count} ${order.product.unit}\n\n`;
+  });
   return text;
 }
 
@@ -106,6 +145,7 @@ export function createEmptyCustomer(): Customer {
     phone: "",
     deliveryNote: "",
     deliveryService: "",
+    carRegistration: "",
   };
 }
 
@@ -116,6 +156,11 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     isDeliver: false,
     deliveryCost: 0,
     containerCount: 0,
+  },
+  orderOptions: {
+    isWithoutDetails: false,
+    orderType: false,
+    packageType: false,
   },
   addItem: (item: OrderItem) => {
     set((state: OrderState) => {
@@ -167,6 +212,30 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
       deliveryDetails: {
         ...state.deliveryDetails,
         deliveryCost: value,
+      },
+    }));
+  },
+  toggleIsWithoutDetails: () => {
+    set((state: OrderState) => ({
+      orderOptions: {
+        ...state.orderOptions,
+        isWithoutDetails: !state.orderOptions.isWithoutDetails,
+      },
+    }));
+  },
+  toggleOrderType: () => {
+    set((state: OrderState) => ({
+      orderOptions: {
+        ...state.orderOptions,
+        orderType: !state.orderOptions.orderType,
+      },
+    }));
+  },
+  togglePackageType: () => {
+    set((state: OrderState) => ({
+      orderOptions: {
+        ...state.orderOptions,
+        packageType: !state.orderOptions.packageType,
       },
     }));
   },

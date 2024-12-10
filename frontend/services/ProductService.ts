@@ -7,6 +7,7 @@ export interface Product {
   image: string;
   kg: number;
   unit: string;
+  lotNumber: string;
 }
 
 export async function getProducts(
@@ -22,6 +23,8 @@ export async function getProducts(
     filter: filter,
     sort: sort,
   };
-  const products = await pb.collection("products").getList<Product>(page, 30, options);
+  const products = await pb
+    .collection("products")
+    .getList<Product>(page, 30, options);
   return products.items;
 }

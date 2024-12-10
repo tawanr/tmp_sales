@@ -9,6 +9,7 @@ export type Customer = {
   phone: string;
   deliveryService: string;
   deliveryNote: string;
+  carRegistration: string;
 };
 
 export async function getCustomers(search: string = ""): Promise<Customer[]> {
@@ -18,7 +19,9 @@ export async function getCustomers(search: string = ""): Promise<Customer[]> {
       filter: `name ~ '${search}' || phone ~ '${search}' || address ~ '${search}'`,
     };
   }
-  const customers = await pb.collection("customers").getList<Customer>(1, 10, filters);
+  const customers = await pb
+    .collection("customers")
+    .getList<Customer>(1, 10, filters);
   return customers.items;
 }
 

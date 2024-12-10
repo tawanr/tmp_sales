@@ -4,6 +4,7 @@ import {
   createEmptyCustomer,
   finishOrder,
   generateOrderSummary,
+  generateWithdrawalSummary,
   OrderItem,
   removeItem,
   resetDeliveryDetails,
@@ -112,9 +113,15 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
           paddingHorizontal: 10,
         }}
       >
-        <Image source={{ uri: image_path }} style={{ width: 50, height: 50 }} />
+        <Image
+          source={{ uri: image_path }}
+          style={{ width: 50, height: 50 }}
+        />
         <View>
-          <Text ellipsizeMode="tail" style={{ fontWeight: "bold" }}>
+          <Text
+            ellipsizeMode="tail"
+            style={{ fontWeight: "bold" }}
+          >
             {order.product.label}
           </Text>
           <Text>
@@ -164,22 +171,29 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
 };
 
 export default function Order() {
-  const { orders, customer, deliveryDetails } = useOrderStore(
+  const { orders, customer, deliveryDetails, orderOptions } = useOrderStore(
     useShallow((state) => ({
       orders: state.orders,
       customer: state.customer,
       deliveryDetails: state.deliveryDetails,
+      orderOptions: state.orderOptions,
     }))
   );
-  const { toggleIsDelivery, changeContainerCount, changeDeliveryCost, updateCustomer } =
-    useOrderStore();
+  const {
+    toggleIsDelivery,
+    changeContainerCount,
+    changeDeliveryCost,
+    updateCustomer,
+    toggleIsWithoutDetails,
+    toggleOrderType,
+    togglePackageType,
+  } = useOrderStore();
   const { user } = useUserStore();
   const [summary, setSummary] = useState("");
   const ordersList = Array.from(orders.values());
   const copiedOpacity = useAnimatedValue(0);
   const [isOptionsOpen, setOptionsOpen] = useState(false);
-  const [orderType, setOrderType] = useState(false);
-  const [packageType, setPackageType] = useState(false);
+  const { isWithoutDetails, orderType, packageType } = orderOptions;
 
   const updateContainerCount = (value: string) => {
     let count = parseInt(value);
@@ -198,7 +212,13 @@ export default function Order() {
   };
 
   const onSubmit = () => {
-    const sentOrder = finishOrder(orders, customer, deliveryDetails, summary, user);
+    const sentOrder = finishOrder(
+      orders,
+      customer,
+      deliveryDetails,
+      summary,
+      user
+    );
     sentOrder
       .then(() => {
         clearItems();
@@ -227,8 +247,28 @@ export default function Order() {
   };
 
   useEffect(() => {
-    setSummary(generateOrderSummary(orders, customer, deliveryDetails));
-  }, [orders, customer, deliveryDetails]);
+    if (!orderType) {
+      setSummary(
+        generateOrderSummary(orders, customer, deliveryDetails, orderOptions)
+      );
+    } else {
+      setSummary(
+        generateWithdrawalSummary(
+          orders,
+          customer,
+          deliveryDetails,
+          orderOptions
+        )
+      );
+    }
+  }, [
+    orders,
+    customer,
+    deliveryDetails,
+    orderType,
+    isWithoutDetails,
+    packageType,
+  ]);
 
   return (
     <KeyboardAvoidingView
@@ -238,31 +278,85 @@ export default function Order() {
     >
       <Stack.Screen
         options={{
-          headerRight: () => <Pressable onPress={toggleOptionsDialog} style={{ margin: 5 }}><FontAwesome name="bars" size={20} color="#222" /></Pressable>,
-        }} />
+          headerRight: () => (
+            <Pressable
+              onPress={toggleOptionsDialog}
+              style={{ margin: 5 }}
+            >
+              <FontAwesome
+                name="bars"
+                size={20}
+                color="#222"
+              />
+            </Pressable>
+          ),
+        }}
+      />
       <View style={[styles.optionsDialog, { opacity: isOptionsOpen ? 1 : 0 }]}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
           <Text style={{ fontWeight: "bold" }}>ตัวเลือก</Text>
         </View>
-        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
           <Text style={{ color: orderType ? "#aaa" : "#222" }}>สินค้า</Text>
           <Switch
             trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
             value={orderType}
-            onValueChange={() => setOrderType(!orderType)}
+            onValueChange={toggleOrderType}
             ios_backgroundColor={PRIMARY_DARK}
           />
-          <Text style={{ color: !orderType ? "#aaa" : "#222" }}>เบิกสินค้า</Text>
+          <Text style={{ color: !orderType ? "#aaa" : "#222" }}>
+            เบิกสินค้า
+          </Text>
         </View>
-        <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
           <Text style={{ color: packageType ? "#aaa" : "#222" }}>โฟม</Text>
           <Switch
             trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
             value={packageType}
-            onValueChange={() => setPackageType(!packageType)}
+            onValueChange={togglePackageType}
             ios_backgroundColor={PRIMARY_DARK}
           />
           <Text style={{ color: !packageType ? "#aaa" : "#222" }}>ถุงดำ</Text>
+        </View>
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
+          <Switch
+            trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
+            value={isWithoutDetails}
+            onValueChange={toggleIsWithoutDetails}
+            ios_backgroundColor={PRIMARY_DARK}
+          />
+          <Text>เฉพาะสินค้า</Text>
         </View>
       </View>
       <View style={[styles.customerDetails]}>
@@ -336,7 +430,12 @@ export default function Order() {
           <View style={[styles.countControls, { marginRight: 0 }]}>
             <Text>ค่าขนส่ง</Text>
             <TextInput
-              style={{ textAlign: "center", width: 50, borderWidth: 1, height: 30 }}
+              style={{
+                textAlign: "center",
+                width: 50,
+                borderWidth: 1,
+                height: 30,
+              }}
               value={deliveryDetails.deliveryCost.toString()}
               onChangeText={updateDeliveryCost}
               keyboardType="numeric"
@@ -355,7 +454,12 @@ export default function Order() {
               <Text style={{ fontSize: 26 }}>-</Text>
             </Pressable>
             <TextInput
-              style={{ textAlign: "center", width: 30, borderWidth: 1, height: 30 }}
+              style={{
+                textAlign: "center",
+                width: 30,
+                borderWidth: 1,
+                height: 30,
+              }}
               value={deliveryDetails.containerCount.toString()}
               onChangeText={updateContainerCount}
               keyboardType="numeric"
@@ -395,7 +499,12 @@ export default function Order() {
           selectTextOnFocus={true}
         />
         <View
-          style={{ position: "absolute", top: 20, right: 15, flexDirection: "row" }}
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 15,
+            flexDirection: "row",
+          }}
         >
           <Animated.Text
             style={{
@@ -407,7 +516,11 @@ export default function Order() {
             คัดลอก
           </Animated.Text>
           <Pressable onPress={copyToClipboard}>
-            <FontAwesome name="copy" size={20} color="#888" />
+            <FontAwesome
+              name="copy"
+              size={20}
+              color="#888"
+            />
           </Pressable>
         </View>
       </View>

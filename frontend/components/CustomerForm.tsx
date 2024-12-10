@@ -1,8 +1,20 @@
 import { Customer } from "@/services/CustomerService";
 import { useOrderStore } from "@/services/OrderService";
 import { Link, router } from "expo-router";
-import { Control, Controller, useForm, UseFormHandleSubmit } from "react-hook-form";
-import { Button, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Control,
+  Controller,
+  useForm,
+  UseFormHandleSubmit,
+} from "react-hook-form";
+import {
+  Button,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 type Props = {
   control: Control<Customer, any>;
@@ -16,6 +28,7 @@ export type CustomerForm = {
   phone: string;
   deliveryNote: string;
   deliveryService: string;
+  carRegistration: string;
 };
 
 const styles = StyleSheet.create({
@@ -84,7 +97,7 @@ export default function CustomerFormComponent({
       <Controller
         control={control}
         name="phone"
-        rules={{ required: true }}
+        rules={{ required: false }}
         render={({ field: { onChange, onBlur, value } }) => (
           <View style={[styles.inputRow]}>
             <View style={{ justifyContent: "center", alignContent: "center" }}>
@@ -175,7 +188,34 @@ export default function CustomerFormComponent({
           </View>
         )}
       />
-      <Button title="บันทึก" onPress={handleSubmit(onSubmit)} />
+      <Controller
+        control={control}
+        name="carRegistration"
+        rules={{ required: false }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <View style={[styles.inputRow]}>
+            <View style={{ justifyContent: "center", alignContent: "center" }}>
+              <Text style={[styles.inputLabel]}>ทะเบียนรถ:</Text>
+            </View>
+            <View style={[styles.inputField]}>
+              <TextInput
+                style={{ width: "100%" }}
+                placeholder="ทะเบียนรถ"
+                placeholderTextColor={"#aaa"}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                numberOfLines={4}
+                multiline={true}
+              />
+            </View>
+          </View>
+        )}
+      />
+      <Button
+        title="บันทึก"
+        onPress={handleSubmit(onSubmit)}
+      />
     </View>
   );
 }
