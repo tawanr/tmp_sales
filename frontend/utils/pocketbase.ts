@@ -1,7 +1,14 @@
-import PocketBase from "pocketbase";
+import PocketBase, { AsyncAuthStore } from "pocketbase";
 import { API_URL } from "./constants";
+import * as AsyncStorage from "expo-secure-store";
 
-const pb = new PocketBase(API_URL);
+const store = new AsyncAuthStore({
+  save: async (serializedAuthData) =>
+    AsyncStorage.setItemAsync("pb_auth", serializedAuthData),
+  initial: AsyncStorage.getItemAsync("pb_auth"),
+});
+
+const pb = new PocketBase(API_URL, store);
 
 pb.beforeSend = function (url, options) {
   options.headers = Object.assign({}, options.headers, {

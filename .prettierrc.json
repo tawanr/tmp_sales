@@ -1,0 +1,13 @@
+{
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "singleAttributePerLine": true,
+    "semi": true,
+    "bracketSpacing": true,
+    "arrowParens": "always",
+    "printWidth": 80,
+    "useTabs": false,
+    "proseWrap": "always",
+    "quoteProps": "as-needed",
+    "endOfLine": "lf"
+}

@@ -1,6 +1,8 @@
 import pb from "@/utils/pocketbase";
 import { router } from "expo-router";
 import { create } from "zustand";
+import * as AuthStore from "expo-secure-store";
+import { BaseAuthStore } from "pocketbase";
 
 export interface User {
   id: string;
@@ -31,7 +33,9 @@ export const useUserStore = create<UserStore & UserStoreActions>((set) => ({
 export const login = async (email: string, password: string) => {
   const { setUser } = useUserStore();
   try {
-    const authData = await pb.collection("users").authWithPassword(email, password);
+    const authData = await pb
+      .collection("users")
+      .authWithPassword(email, password);
     setUser({ id: authData.record.id, name: authData.record.name });
   } catch (error) {
     console.error(error);
