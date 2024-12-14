@@ -29,8 +29,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "image": "./assets/images/splash.png",
+          "imageWidth": 300,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
@@ -47,6 +47,12 @@
       "eas": {
         "projectId": "337df43e-cfd8-499e-bd75-cd54099eeb79"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/337df43e-cfd8-499e-bd75-cd54099eeb79"
     }
   }
 }

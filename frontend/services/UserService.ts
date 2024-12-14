@@ -1,8 +1,6 @@
 import pb from "@/utils/pocketbase";
 import { router } from "expo-router";
 import { create } from "zustand";
-import * as AuthStore from "expo-secure-store";
-import { BaseAuthStore } from "pocketbase";
 
 export interface User {
   id: string;
