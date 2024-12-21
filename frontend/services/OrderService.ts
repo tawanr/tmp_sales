@@ -55,9 +55,9 @@ type OrderActions = {
 function generateOrderText(order: OrderItem): string {
   const { product, count } = order;
   let text = `${product.label} = ${count} ${product.unit}\n`;
-  text += `${count}x${product.kg}x${product.price}\n=${numberWithCommas(
-    product.price * product.kg * count
-  )}\n\n`;
+  text += `${count}x${product.kg}x${numberWithCommas(
+    product.price
+  )}\n=${numberWithCommas(product.price * product.kg * count)}\n\n`;
   return text;
 }
 
