@@ -25,6 +25,7 @@ export interface DeliveryDetails {
   isDeliver: boolean;
   deliveryCost: number;
   containerCount: number;
+  productLocation: string;
 }
 
 export interface OrderOptions {
@@ -50,6 +51,7 @@ type OrderActions = {
   toggleIsWithoutDetails: () => void;
   toggleOrderType: () => void;
   togglePackageType: () => void;
+  setProductLocation: (value: string) => void;
 };
 
 function generateOrderText(order: OrderItem): string {
@@ -73,7 +75,9 @@ export function generateOrderSummary(
   let totalCost = 0;
   let deliveryCost = 0;
   if (!isWithoutDetails) {
-    text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name}\n`;
+    text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name} ${
+      deliveryDetails.isDeliver ? "" : deliveryDetails.productLocation
+    } \n`;
     if (customer.deliveryService.length > 0) {
       text += `ส่ง ${customer.deliveryService}\n`;
     }
@@ -156,6 +160,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     isDeliver: false,
     deliveryCost: 0,
     containerCount: 0,
+    productLocation: "",
   },
   orderOptions: {
     isWithoutDetails: false,
@@ -209,6 +214,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
   },
   changeDeliveryCost: (value: number) => {
     set((state: OrderState) => ({
+      ...state,
       deliveryDetails: {
         ...state.deliveryDetails,
         deliveryCost: value,
@@ -236,6 +242,15 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
       orderOptions: {
         ...state.orderOptions,
         packageType: !state.orderOptions.packageType,
+      },
+    }));
+  },
+  setProductLocation: (value: string) => {
+    set((state: OrderState) => ({
+      ...state,
+      deliveryDetails: {
+        ...state.deliveryDetails,
+        productLocation: value,
       },
     }));
   },
@@ -298,4 +313,12 @@ export function finishOrder(
 export async function createOrder(order: CompleteOrder) {
   const newOrder = await pb.collection("orders").create(order);
   return newOrder.id;
+}
+
+export async function fetchOrderHistory(user: User | null, page: number = 0) {
+  let filters = {};
+  if (user) {
+    filters = { filter: { user } };
+  }
+  const orders = await pb.collection("orders").getList();
 }

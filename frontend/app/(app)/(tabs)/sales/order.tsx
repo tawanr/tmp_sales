@@ -20,6 +20,7 @@ import {
   FlatList,
   Image,
   KeyboardAvoidingView,
+  Modal,
   Pressable,
   StyleSheet,
   Switch,
@@ -187,13 +188,18 @@ export default function Order() {
     toggleIsWithoutDetails,
     toggleOrderType,
     togglePackageType,
+    setProductLocation,
   } = useOrderStore();
   const { user } = useUserStore();
   const [summary, setSummary] = useState("");
   const ordersList = Array.from(orders.values());
   const copiedOpacity = useAnimatedValue(0);
   const [isOptionsOpen, setOptionsOpen] = useState(false);
+  const [locationModalVisible, setLocationModalVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
   const { isWithoutDetails, orderType, packageType } = orderOptions;
+
+  const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวล"];
 
   const updateContainerCount = (value: string) => {
     let count = parseInt(value);
@@ -269,6 +275,10 @@ export default function Order() {
     isWithoutDetails,
     packageType,
   ]);
+
+  useEffect(() => {
+    setProductLocation(selectedLocation);
+  }, [selectedLocation]);
 
   return (
     <KeyboardAvoidingView
@@ -427,21 +437,45 @@ export default function Order() {
               onValueChange={toggleIsDelivery}
             />
           </View>
-          <View style={[styles.countControls, { marginRight: 0 }]}>
-            <Text>ค่าขนส่ง</Text>
-            <TextInput
-              style={{
-                textAlign: "center",
-                width: 50,
-                borderWidth: 1,
-                height: 30,
-              }}
-              value={deliveryDetails.deliveryCost.toString()}
-              onChangeText={updateDeliveryCost}
-              keyboardType="numeric"
-              selectTextOnFocus={true}
-            />
-          </View>
+          {deliveryDetails.isDeliver ? (
+            <View
+              id="deliveryDetails"
+              style={[styles.countControls, { marginRight: 0 }]}
+            >
+              <Text>ค่าขนส่ง</Text>
+              <TextInput
+                style={{
+                  textAlign: "center",
+                  width: 50,
+                  borderWidth: 1,
+                  height: 30,
+                }}
+                value={deliveryDetails.deliveryCost.toString()}
+                onChangeText={updateDeliveryCost}
+                keyboardType="numeric"
+                selectTextOnFocus={true}
+              />
+            </View>
+          ) : (
+            <View style={[styles.countControls, { marginRight: 0 }]}>
+              {/* <Text>จุดรับสินค้า</Text> */}
+              <Pressable
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  borderRadius: 5,
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  minWidth: 100,
+                }}
+                onPress={() => setLocationModalVisible(true)}
+              >
+                <Text style={{ textAlign: "center" }}>
+                  {selectedLocation || "เลือกที่เบิก"}
+                </Text>
+              </Pressable>
+            </View>
+          )}
           <View style={[styles.countControls, { marginRight: 0 }]}>
             <Pressable
               onPress={() => {
@@ -556,6 +590,82 @@ export default function Order() {
           </Pressable>
         </View>
       </View>
+
+      {/* Location Selection Modal */}
+      <Modal
+        visible={locationModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setLocationModalVisible(false)}
+      >
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => setLocationModalVisible(false)}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 10,
+              padding: 20,
+              width: "80%",
+              maxHeight: "60%",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                marginBottom: 15,
+                textAlign: "center",
+              }}
+            >
+              เลือกจุดรับสินค้า
+            </Text>
+            <FlatList
+              data={locationOptions}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={{
+                    paddingVertical: 15,
+                    paddingHorizontal: 10,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#eee",
+                  }}
+                  onPress={() => {
+                    if (item === "-") {
+                      setSelectedLocation("");
+                    } else {
+                      setSelectedLocation(item);
+                    }
+                    setLocationModalVisible(false);
+                  }}
+                >
+                  <Text style={{ fontSize: 16, textAlign: "center" }}>
+                    {item}
+                  </Text>
+                </Pressable>
+              )}
+            />
+            <Pressable
+              style={{
+                marginTop: 15,
+                backgroundColor: "#ccc",
+                paddingVertical: 10,
+                borderRadius: 5,
+              }}
+              onPress={() => setLocationModalVisible(false)}
+            >
+              <Text style={{ textAlign: "center", fontSize: 16 }}>ยกเลิก</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
