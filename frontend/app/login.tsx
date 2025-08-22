@@ -2,7 +2,7 @@ import { checkAuth, useUserStore } from "@/services/UserService";
 import { PRIMARY_DARK, PRIMARY_LIGHT } from "@/utils/constants";
 import pb from "@/utils/pocketbase";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Keyboard,
   Pressable,
@@ -38,6 +38,10 @@ export default function Login() {
   const [errors, setErrors] = useState("");
   const { setUser } = useUserStore();
 
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   const login = () => {
     const authData = pb.collection("users").authWithPassword(email, password);
     authData
@@ -53,10 +57,12 @@ export default function Login() {
       });
   };
 
-  checkAuth();
   return (
     <View style={[styles.container]}>
-      <Pressable style={[styles.container]} onPress={() => Keyboard.dismiss()}>
+      <Pressable
+        style={[styles.container]}
+        onPress={() => Keyboard.dismiss()}
+      >
         <Text style={{ color: "#e00" }}>{errors}</Text>
         <View style={[styles.input]}>
           <TextInput
