@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { View } from "react-native";
 
 export default function CustomerCreate() {
-  const { updateCustomer } = useOrderStore();
+  const { updateOrderCustomer } = useOrderStore();
   const {
     control,
     handleSubmit,
@@ -22,7 +22,7 @@ export default function CustomerCreate() {
   });
   const onSubmit = (formData: CustomerForm) => {
     createCustomer(formData).then((id) => {
-      updateCustomer({ ...formData, id: id });
+      updateOrderCustomer({ ...formData, id: id });
       router.dismiss(2);
     });
   };
@@ -40,6 +40,7 @@ export default function CustomerCreate() {
         control={control}
         handleSubmit={handleSubmit}
         onSubmit={onSubmit}
+        disabledNameEdit={false}
       />
     </View>
   );

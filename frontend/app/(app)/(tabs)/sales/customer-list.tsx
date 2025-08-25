@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   customerCard: {
     width: "100%",
-    height: 60,
+    height: 80,
     backgroundColor: "#fff",
     borderRadius: 10,
     shadowColor: "#000",
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    alignContent: "center",
+    alignContent: "flex-end",
     justifyContent: "center",
     padding: 10,
     flexDirection: "row",
@@ -89,29 +89,42 @@ const styles = StyleSheet.create({
 });
 
 const CustomerListItem = ({ customer }: { customer: Customer }) => {
-  const { updateCustomer } = useOrderStore();
+  const { updateOrderCustomer } = useOrderStore();
   const selectCustomer = () => {
-    updateCustomer(customer);
+    updateOrderCustomer(customer);
     router.dismiss();
   };
   return (
     <View style={[styles.customerCard]}>
-      <Pressable onPress={selectCustomer} style={{ flex: 1, justifyContent: "center" }}>
+      <Pressable
+        onPress={selectCustomer}
+        style={{
+          flex: 1,
+          justifyContent: "flex-start",
+          alignContent: "flex-end",
+          margin: 0,
+        }}
+      >
         <View
           style={{
-            flex: 1,
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "flex-start",
+            alignContent: "flex-start",
             flexDirection: "row",
           }}
         >
-          <Text style={{ fontWeight: "bold", width: 150 }}>{customer.name}</Text>
-          <Text ellipsizeMode="tail" numberOfLines={1}>
-            {customer.address}
+          <Text style={{ fontWeight: "bold", width: 150 }}>
+            {customer.name}
           </Text>
-        </View>
-        <View>
           <Text>{customer.phone}</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text
+            ellipsizeMode="tail"
+            numberOfLines={2}
+          >
+            {customer.deliveryNote}
+          </Text>
         </View>
       </Pressable>
     </View>
