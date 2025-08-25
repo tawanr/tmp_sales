@@ -42,9 +42,10 @@ type OrderState = {
 };
 
 type OrderActions = {
+  clearCustomer: () => void;
   addItem: (item: OrderItem) => void;
   changeAmount: (id: string, amount: number) => void;
-  updateCustomer: (customer: Customer) => void;
+  updateOrderCustomer: (customer: Customer) => void;
   toggleIsDelivery: (value: boolean) => void;
   changeDeliveryCost: (value: number) => void;
   changeContainerCount: (value: number) => void;
@@ -78,7 +79,7 @@ export function generateOrderSummary(
     text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name} ${
       deliveryDetails.isDeliver ? "" : deliveryDetails.productLocation
     } \n`;
-    if (customer.deliveryService.length > 0) {
+    if (customer.deliveryService.length > 0 && deliveryDetails.isDeliver) {
       text += `ส่ง ${customer.deliveryService}\n`;
     }
   }
@@ -90,34 +91,32 @@ export function generateOrderSummary(
     text += "ค่าส่ง+";
     deliveryCost = deliveryDetails.deliveryCost;
   }
-  if (!packageType) {
-    text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
-    if (deliveryCost > 0 && deliveryDetails.isDeliver) {
-      text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
+  if (deliveryDetails.isDeliver) {
+    if (!packageType) {
+      text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
+      if (deliveryCost > 0 && deliveryDetails.isDeliver) {
+        text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
+      } else {
+        text += `80x${deliveryDetails.containerCount}\n`;
+      }
+      deliveryCost += 80;
     } else {
-      text += `80x${deliveryDetails.containerCount}\n`;
+      text += `ค่าถุงดำ ${deliveryDetails.containerCount} ใบ\n`;
+      if (deliveryCost > 0 && deliveryDetails.isDeliver) {
+        text += `(${deliveryCost}+10)x${deliveryDetails.containerCount}\n`;
+      } else {
+        text += `10x${deliveryDetails.containerCount}\n`;
+      }
+      deliveryCost += 10;
     }
-    deliveryCost += 80;
-  } else {
-    text += `ค่าถุงดำ ${deliveryDetails.containerCount} ใบ\n`;
-    if (deliveryCost > 0 && deliveryDetails.isDeliver) {
-      text += `(${deliveryCost}+10)x${deliveryDetails.containerCount}\n`;
-    } else {
-      text += `10x${deliveryDetails.containerCount}\n`;
-    }
-    deliveryCost += 10;
+    deliveryCost *= deliveryDetails.containerCount;
+    totalCost += deliveryCost;
+    text += `=${numberWithCommas(deliveryCost)}\n\n`;
   }
-  deliveryCost *= deliveryDetails.containerCount;
-  totalCost += deliveryCost;
-  text += `=${numberWithCommas(deliveryCost)}\n\n`;
   text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
-  if (!isWithoutDetails) {
+  if (!isWithoutDetails && deliveryDetails.isDeliver) {
     text += `ส่ง\n`;
-    text += `${customer.name} ${customer.address}\n`;
-    text += `เบอร์ ${customer.phone}\n`;
-    if (deliveryDetails.isDeliver && customer.deliveryNote.length > 0) {
-      text += `**${customer.deliveryNote}\n`;
-    }
+    text += `${customer.deliveryNote}\n`;
   }
   return text;
 }
@@ -157,7 +156,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
   orders: new Map<string, OrderItem>(),
   customer: createEmptyCustomer(),
   deliveryDetails: {
-    isDeliver: false,
+    isDeliver: true,
     deliveryCost: 0,
     containerCount: 0,
     productLocation: "",
@@ -166,6 +165,12 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     isWithoutDetails: false,
     orderType: false,
     packageType: false,
+  },
+  clearCustomer: () => {
+    set((state: OrderState) => ({
+      ...state,
+      customer: createEmptyCustomer(),
+    }));
   },
   addItem: (item: OrderItem) => {
     set((state: OrderState) => {
@@ -189,7 +194,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
       return state;
     });
   },
-  updateCustomer: (customer: Customer) => {
+  updateOrderCustomer: (customer: Customer) => {
     set((state: OrderState) => {
       state = { ...state, customer: customer };
       return state;

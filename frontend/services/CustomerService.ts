@@ -29,3 +29,10 @@ export async function createCustomer(customer: CustomerForm): Promise<string> {
   const newCustomer = await pb.collection("customers").create(customer);
   return newCustomer.id;
 }
+
+export async function updateCustomer(
+  id: string,
+  customer: CustomerForm
+): Promise<void> {
+  await pb.collection("customers").update(id, customer);
+}

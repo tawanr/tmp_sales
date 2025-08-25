@@ -42,14 +42,26 @@ const styles = StyleSheet.create({
   },
   customerDetails: {
     width: "100%",
-    justifyContent: "space-around",
+    justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 40,
+    gap: 10,
   },
-  customerEditButton: {
+  customerSelectButton: {
     backgroundColor: "#00f",
     padding: 10,
     borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+  customerEditButton: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 10,
+    borderColor: "#000",
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
@@ -184,7 +196,7 @@ export default function Order() {
     toggleIsDelivery,
     changeContainerCount,
     changeDeliveryCost,
-    updateCustomer,
+    updateOrderCustomer,
     toggleIsWithoutDetails,
     toggleOrderType,
     togglePackageType,
@@ -228,7 +240,7 @@ export default function Order() {
     sentOrder
       .then(() => {
         clearItems();
-        updateCustomer(createEmptyCustomer());
+        updateOrderCustomer(createEmptyCustomer());
         resetDeliveryDetails();
       })
       .catch((errors) => {
@@ -370,14 +382,23 @@ export default function Order() {
         </View>
       </View>
       <View style={[styles.customerDetails]}>
+        <View style={{ flex: 1, flexDirection: "row" }}>
+          <View>
+            <Text>ชื่อลูกค้า: </Text>
+            <Text style={{ fontWeight: "bold" }}>{customer.name || "-"}</Text>
+          </View>
+        </View>
         <View>
-          <Text>ชื่อลูกค้า: </Text>
-          <Text style={{ fontWeight: "bold" }}>{customer.name || "-"}</Text>
+          <Link href="/sales/customer-list">
+            <View style={[styles.customerSelectButton]}>
+              <Text style={{ color: "#fff" }}>เลือก</Text>
+            </View>
+          </Link>
         </View>
         <View>
           <Link href="/sales/customer">
             <View style={[styles.customerEditButton]}>
-              <Text style={{ color: "#fff" }}>แก้ไข</Text>
+              <Text style={{ color: "#000" }}>แก้ไข</Text>
             </View>
           </Link>
         </View>
@@ -458,7 +479,6 @@ export default function Order() {
             </View>
           ) : (
             <View style={[styles.countControls, { marginRight: 0 }]}>
-              {/* <Text>จุดรับสินค้า</Text> */}
               <Pressable
                 style={{
                   borderWidth: 1,

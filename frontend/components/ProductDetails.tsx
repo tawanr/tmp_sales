@@ -11,7 +11,6 @@ import {
   Keyboard,
 } from "react-native";
 import { API_URL } from "@/utils/constants";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 
 type Props = {
@@ -119,7 +118,10 @@ export default function ProductDetails({ product, close, callback }: Props) {
         <View style={[styles.modalContainer]}>
           <View>
             <Text style={[styles.title]}>{product.label}</Text>
-            <Image source={{ uri: image_path }} style={[styles.cardImage]} />
+            <Image
+              source={{ uri: image_path }}
+              style={[styles.cardImage]}
+            />
             <View style={[styles.countRow]}>
               <Pressable
                 onPress={() => setCount(count - 1)}
@@ -143,8 +145,15 @@ export default function ProductDetails({ product, close, callback }: Props) {
               </Pressable>
             </View>
             <View style={[styles.buttonsRow]}>
-              <Button title="Cancel" onPress={close} color={"#f00"} />
-              <Button title="Add" onPress={addProduct} />
+              <Button
+                title="Cancel"
+                onPress={close}
+                color={"#f00"}
+              />
+              <Button
+                title="Add"
+                onPress={addProduct}
+              />
             </View>
           </View>
         </View>

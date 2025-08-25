@@ -1,12 +1,5 @@
 import { Customer } from "@/services/CustomerService";
-import { useOrderStore } from "@/services/OrderService";
-import { Link, router } from "expo-router";
-import {
-  Control,
-  Controller,
-  useForm,
-  UseFormHandleSubmit,
-} from "react-hook-form";
+import { Control, Controller, UseFormHandleSubmit } from "react-hook-form";
 import {
   Button,
   Pressable,
@@ -20,6 +13,9 @@ type Props = {
   control: Control<Customer, any>;
   handleSubmit: UseFormHandleSubmit<Customer, undefined>;
   onSubmit: (data: Customer) => void;
+  onSubmitAndEdit?: ((data: Customer) => void) | null;
+  onReset?: (() => void) | null;
+  disabledNameEdit: boolean | null;
 };
 
 export type CustomerForm = {
@@ -63,12 +59,56 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginTop: 5,
   },
+  buttonsRow: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignContent: "flex-end",
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+  },
+  primaryButton: {
+    height: 40,
+    width: 100,
+    backgroundColor: "rgba(0, 139, 23, 1)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    marginBottom: 15,
+    marginTop: 5,
+    color: "#fff",
+  },
+  saveButton: {
+    height: 40,
+    width: 100,
+    backgroundColor: "#00e",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    marginBottom: 15,
+    marginTop: 5,
+    color: "#fff",
+  },
+  clearButton: {
+    height: 40,
+    width: 100,
+    backgroundColor: "rgba(255, 3, 3, 1)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    marginBottom: 15,
+    marginTop: 5,
+    color: "#fff",
+  },
 });
 
 export default function CustomerFormComponent({
   control,
   handleSubmit,
   onSubmit,
+  onSubmitAndEdit = null,
+  onReset = null,
+  disabledNameEdit = false,
 }: Props) {
   return (
     <View>
@@ -89,28 +129,7 @@ export default function CustomerFormComponent({
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-              />
-            </View>
-          </View>
-        )}
-      />
-      <Controller
-        control={control}
-        name="phone"
-        rules={{ required: false }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputRow]}>
-            <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>เบอร์:</Text>
-            </View>
-            <View style={[styles.inputField]}>
-              <TextInput
-                style={{ width: "100%" }}
-                placeholder="เบอร์"
-                placeholderTextColor={"#aaa"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
+                editable={!disabledNameEdit}
               />
             </View>
           </View>
@@ -142,30 +161,6 @@ export default function CustomerFormComponent({
       />
       <Controller
         control={control}
-        name="address"
-        rules={{ required: false }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View style={[styles.inputRow]}>
-            <View style={{ justifyContent: "center", alignContent: "center" }}>
-              <Text style={[styles.inputLabel]}>ที่อยู่:</Text>
-            </View>
-            <View style={[styles.inputField]}>
-              <TextInput
-                style={{ width: "100%" }}
-                placeholder="ที่อยู่"
-                placeholderTextColor={"#aaa"}
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                numberOfLines={4}
-                multiline={true}
-              />
-            </View>
-          </View>
-        )}
-      />
-      <Controller
-        control={control}
         name="deliveryNote"
         rules={{ required: false }}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -175,13 +170,13 @@ export default function CustomerFormComponent({
             </View>
             <View style={[styles.inputField]}>
               <TextInput
-                style={{ width: "100%" }}
+                style={{ width: "100%", height: 100 }}
                 placeholder="รายละเอียด"
                 placeholderTextColor={"#aaa"}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                numberOfLines={4}
+                numberOfLines={10}
                 multiline={true}
               />
             </View>
@@ -212,10 +207,27 @@ export default function CustomerFormComponent({
           </View>
         )}
       />
-      <Button
-        title="บันทึก"
-        onPress={handleSubmit(onSubmit)}
-      />
+      <View style={[styles.buttonsRow]}>
+        {onSubmitAndEdit ? (
+          <View style={[styles.primaryButton]}>
+            <Pressable onPress={handleSubmit(onSubmitAndEdit)}>
+              <Text style={{ color: "#fff" }}>แก้ไข</Text>
+            </Pressable>
+          </View>
+        ) : null}
+        <View style={[styles.saveButton]}>
+          <Pressable onPress={handleSubmit(onSubmit)}>
+            <Text style={{ color: "#fff" }}>บันทึก</Text>
+          </Pressable>
+        </View>
+        {onReset ? (
+          <View style={[styles.clearButton]}>
+            <Pressable onPress={handleSubmit(onReset)}>
+              <Text style={{ color: "#fff" }}>เคลียร์</Text>
+            </Pressable>
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 }
