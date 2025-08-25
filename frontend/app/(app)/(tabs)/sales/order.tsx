@@ -211,7 +211,7 @@ export default function Order() {
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const { isWithoutDetails, orderType, packageType } = orderOptions;
 
-  const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวล"];
+  const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์"];
 
   const updateContainerCount = (value: string) => {
     let count = parseInt(value);

@@ -82,6 +82,9 @@ export function generateOrderSummary(
     if (customer.deliveryService.length > 0 && deliveryDetails.isDeliver) {
       text += `ส่ง ${customer.deliveryService}\n`;
     }
+    if (!deliveryDetails.isDeliver && customer.carRegistration?.length > 0) {
+      text += `ทะเบียน ${customer.carRegistration}\n`;
+    }
   }
   orders.forEach((order) => {
     text += generateOrderText(order);

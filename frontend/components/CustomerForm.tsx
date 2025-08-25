@@ -11,7 +11,7 @@ import {
 
 type Props = {
   control: Control<Customer, any>;
-  handleSubmit: UseFormHandleSubmit<Customer, undefined>;
+  handleSubmit: UseFormHandleSubmit<Customer, Customer>;
   onSubmit: (data: Customer) => void;
   onSubmitAndEdit?: ((data: Customer) => void) | null;
   onReset?: (() => void) | null;
@@ -209,23 +209,26 @@ export default function CustomerFormComponent({
       />
       <View style={[styles.buttonsRow]}>
         {onSubmitAndEdit ? (
-          <View style={[styles.primaryButton]}>
-            <Pressable onPress={handleSubmit(onSubmitAndEdit)}>
-              <Text style={{ color: "#fff" }}>แก้ไข</Text>
-            </Pressable>
-          </View>
-        ) : null}
-        <View style={[styles.saveButton]}>
-          <Pressable onPress={handleSubmit(onSubmit)}>
-            <Text style={{ color: "#fff" }}>บันทึก</Text>
+          <Pressable
+            onPress={handleSubmit(onSubmitAndEdit)}
+            style={[styles.primaryButton]}
+          >
+            <Text style={{ color: "#fff" }}>แก้ไข</Text>
           </Pressable>
-        </View>
+        ) : null}
+        <Pressable
+          onPress={handleSubmit(onSubmit)}
+          style={[styles.saveButton]}
+        >
+          <Text style={{ color: "#fff" }}>บันทึก</Text>
+        </Pressable>
         {onReset ? (
-          <View style={[styles.clearButton]}>
-            <Pressable onPress={handleSubmit(onReset)}>
-              <Text style={{ color: "#fff" }}>เคลียร์</Text>
-            </Pressable>
-          </View>
+          <Pressable
+            onPress={handleSubmit(onReset)}
+            style={[styles.clearButton]}
+          >
+            <Text style={{ color: "#fff" }}>เคลียร์</Text>
+          </Pressable>
         ) : null}
       </View>
     </View>
