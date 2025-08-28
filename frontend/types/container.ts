@@ -63,7 +63,7 @@ export const CONTAINER_SPECS: Record<string, ContainerSpec> = {
     type: ContainerType.BLACK_BAG,
     size: ContainerSize.LARGE,
     name: "ถุงดำ",
-    price: 15,
+    price: 10,
     capacity: 12,
     description: "ถุงดำขนาดใหญ่ สำหรับสินค้า 7-12 กก",
   },
