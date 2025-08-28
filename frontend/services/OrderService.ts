@@ -97,10 +97,6 @@ export function generateOrderSummary(
     text += generateOrderText(order);
     totalCost += order.product.price * order.count * order.product.kg;
   });
-  if (deliveryDetails.deliveryCost > 0 && deliveryDetails.isDeliver) {
-    text += "ค่าส่ง+";
-    deliveryCost = deliveryDetails.deliveryCost;
-  }
 
   // Use new container system if available, otherwise fall back to legacy
   if (deliveryDetails.isDeliver) {
@@ -110,7 +106,7 @@ export function generateOrderSummary(
       const containerSummary = containerManager.getSummary();
       deliveryCost += containerSummary.totalPrice;
       deliveryCost += containerSummary.totalDeliveryPrice;
-      text += `=${numberWithCommas(deliveryCost)}\n\n`;
+      // text += `=${numberWithCommas(deliveryCost)}\n\n`;
     }
     totalCost += deliveryCost;
   }

@@ -1,60 +1,63 @@
 {
-    "expo": {
-        "name": "tmp_sales",
-        "slug": "tmp_sales",
-        "version": "0.1.3",
-        "orientation": "portrait",
-        "icon": "./assets/images/icon.png",
-        "scheme": "myapp",
-        "userInterfaceStyle": "automatic",
-        "newArchEnabled": true,
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "tmp-sales"
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/images/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            },
-            "package": "com.tawanr.tmp_sales"
-        },
-        "web": {
-            "bundler": "metro",
-            "output": "static",
-            "favicon": "./assets/images/favicon.png"
-        },
-        "plugins": [
-            "expo-router",
-            [
-                "expo-splash-screen",
-                {
-                    "image": "./assets/images/splash.png",
-                    "imageWidth": 300,
-                    "resizeMode": "contain",
-                    "backgroundColor": "#ffffff"
-                }
-            ],
-            "expo-secure-store",
-            "expo-font",
-            "expo-web-browser"
-        ],
-        "experiments": {
-            "typedRoutes": true
-        },
-        "extra": {
-            "router": {
-                "origin": false
-            },
-            "eas": {
-                "projectId": "337df43e-cfd8-499e-bd75-cd54099eeb79"
-            }
-        },
-        "runtimeVersion": {
-            "policy": "appVersion"
-        },
-        "updates": {
-            "url": "https://u.expo.dev/337df43e-cfd8-499e-bd75-cd54099eeb79"
+  "expo": {
+    "name": "tmp_sales",
+    "slug": "tmp_sales",
+    "version": "0.1.3",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "tmp-sales",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.tawanr.tmp_sales"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash.png",
+          "imageWidth": 300,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
+      ],
+      "expo-secure-store",
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "337df43e-cfd8-499e-bd75-cd54099eeb79"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/337df43e-cfd8-499e-bd75-cd54099eeb79"
     }
+  }
 }

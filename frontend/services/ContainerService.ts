@@ -201,9 +201,9 @@ export class ContainerManager {
             selection.deliveryPrice
           }) x ${quantity} = ${
             totalPrice + selection.deliveryPrice * selection.quantity
-          } บาท\n`;
+          }\n`;
         } else {
-          text += `${spec.name} ${spec.price} x ${quantity} = ${totalPrice} บาท\n`;
+          text += `${spec.name} ${spec.price} x ${quantity} = ${totalPrice}\n`;
         }
       });
     } else {
@@ -211,7 +211,7 @@ export class ContainerManager {
     }
 
     if (selections.length > 1 || includeDetails) {
-      text += `รวม ${summary.totalPrice + summary.totalDeliveryPrice} บาท\n\n`;
+      text += `= ${summary.totalPrice + summary.totalDeliveryPrice}\n\n`;
     }
 
     return text;
