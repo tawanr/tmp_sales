@@ -501,7 +501,7 @@ export default function Order() {
             justifyContent: "space-between",
           }}
         >
-          <View style={[styles.countControls, { marginRight: 0 }]}>
+          <View style={[styles.countControls, { marginHorizontal: 0 }]}>
             <Text>ขนส่ง</Text>
             <Switch
               value={deliveryDetails.isDeliver}
@@ -530,9 +530,9 @@ export default function Order() {
                   borderWidth: 1,
                   borderColor: "#ccc",
                   borderRadius: 5,
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  minWidth: 100,
+                  paddingHorizontal: 20,
+                  paddingVertical: 6,
+                  minWidth: 175,
                 }}
                 onPress={() => setLocationModalVisible(true)}
               >
@@ -681,7 +681,13 @@ export default function Order() {
             </Pressable>
           </View>
         </View>
-        <View style={{ flexDirection: "row", columnGap: 10 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            columnGap: 10,
+            justifyContent: "center",
+          }}
+        >
           <View
             style={{
               justifyContent: "center",
