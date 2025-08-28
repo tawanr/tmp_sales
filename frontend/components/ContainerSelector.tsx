@@ -57,9 +57,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   containerItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "column",
     backgroundColor: "#f8f9fa",
     padding: 12,
     marginVertical: 4,
@@ -105,6 +103,16 @@ const styles = StyleSheet.create({
     height: 32,
     textAlign: "center",
     fontSize: 14,
+  },
+  deliveryPriceInput: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 4,
+    width: 80,
+    height: 32,
+    textAlign: "center",
+    fontSize: 12,
+    marginTop: 5,
   },
   removeButton: {
     backgroundColor: "#dc3545",
@@ -246,6 +254,12 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
     setSelectedContainers(containerManager.getAllContainers());
   };
 
+  const handleUpdateDeliveryPrice = (specId: string, deliveryPrice: number) => {
+    containerManager.updateContainerDeliveryPrice(specId, deliveryPrice);
+    onContainerChange(containerManager);
+    setSelectedContainers(containerManager.getAllContainers());
+  };
+
   const handleAutoSuggest = () => {
     if (!totalWeight || totalWeight <= 0) {
       Alert.alert("ไม่สามารถแนะนำได้", "ไม่มีข้อมูลน้ำหนักสินค้า");
@@ -278,55 +292,89 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
 
     return (
       <View style={styles.containerItem}>
-        <View style={styles.containerInfo}>
-          <Text style={styles.containerName}>{item.spec.name}</Text>
-          <Text style={styles.containerDetails}>
-            {item.spec.price} บาท/ใบ • รวม {numberWithCommas(item.totalPrice)}{" "}
-            บาท
-          </Text>
-          {!!item.spec.capacity && (
+        {/* First Row: Container Info and Quantity Controls */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <View style={styles.containerInfo}>
+            <Text style={styles.containerName}>{item.spec.name}</Text>
             <Text style={styles.containerDetails}>
-              ความจุ: {item.spec.capacity} กก
+              {item.spec.price} บาท/ใบ
             </Text>
-          )}
+            <Text style={styles.containerDetails}>
+              รวม {numberWithCommas(item.totalPrice)} บาท
+            </Text>
+          </View>
+
+          <View style={styles.quantityControls}>
+            <Pressable
+              style={styles.quantityButton}
+              onPress={() => handleUpdateQuantity(specId, item.quantity - 1)}
+            >
+              <Text style={styles.quantityButtonText}>-</Text>
+            </Pressable>
+
+            <TextInput
+              style={styles.quantityInput}
+              value={item.quantity.toString()}
+              onChangeText={(text) => {
+                const quantity = parseInt(text) || 0;
+                handleUpdateQuantity(specId, quantity);
+              }}
+              keyboardType="number-pad"
+              selectTextOnFocus
+            />
+
+            <Pressable
+              style={styles.quantityButton}
+              onPress={() => handleUpdateQuantity(specId, item.quantity + 1)}
+            >
+              <Text style={styles.quantityButtonText}>+</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.removeButton}
+              onPress={() => handleRemoveContainer(specId)}
+            >
+              <FontAwesome
+                name="trash"
+                size={14}
+                color="#fff"
+              />
+            </Pressable>
+          </View>
         </View>
 
-        <View style={styles.quantityControls}>
-          <Pressable
-            style={styles.quantityButton}
-            onPress={() => handleUpdateQuantity(specId, item.quantity - 1)}
-          >
-            <Text style={styles.quantityButtonText}>-</Text>
-          </Pressable>
-
+        {/* Second Row: Delivery Price Input */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: 8,
+            paddingTop: 4,
+            borderTopWidth: 1,
+            borderTopColor: "#f0f0f0",
+          }}
+        >
+          <Text style={{ fontSize: 12, color: "#666", flex: 1 }}>
+            ค่าส่งต่อใบ (บาท):
+          </Text>
           <TextInput
-            style={styles.quantityInput}
-            value={item.quantity.toString()}
+            style={styles.deliveryPriceInput}
+            value={item.deliveryPrice?.toString() || ""}
             onChangeText={(text) => {
-              const quantity = parseInt(text) || 0;
-              handleUpdateQuantity(specId, quantity);
+              const price = parseFloat(text) || 0;
+              handleUpdateDeliveryPrice(specId, price);
             }}
-            keyboardType="number-pad"
+            keyboardType="numeric"
+            placeholder="0"
             selectTextOnFocus
           />
-
-          <Pressable
-            style={styles.quantityButton}
-            onPress={() => handleUpdateQuantity(specId, item.quantity + 1)}
-          >
-            <Text style={styles.quantityButtonText}>+</Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.removeButton}
-            onPress={() => handleRemoveContainer(specId)}
-          >
-            <FontAwesome
-              name="trash"
-              size={14}
-              color="#fff"
-            />
-          </Pressable>
         </View>
       </View>
     );
@@ -336,9 +384,6 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
     <View style={styles.specItem}>
       <View style={styles.specInfo}>
         <Text style={styles.specName}>{item.name}</Text>
-        {!!item.description && (
-          <Text style={styles.specDescription}>{item.description}</Text>
-        )}
         <Text style={styles.specPrice}>{item.price} บาท/ใบ</Text>
       </View>
       <Pressable
@@ -358,8 +403,6 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
     const typeNames = {
       [ContainerType.FOAM]: "โฟม",
       [ContainerType.BLACK_BAG]: "ถุงดำ",
-      [ContainerType.BOX]: "กล่อง",
-      [ContainerType.COOLER]: "ถุงเก็บความเย็น",
     };
 
     return (
@@ -379,7 +422,6 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
   };
 
   const summary = containerManager.getSummary();
-  console.log(selectedContainers);
 
   return (
     <View style={[styles.containerSection, style]}>
@@ -411,6 +453,11 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
             รวม {summary.totalQuantity} ใบ •{" "}
             {numberWithCommas(summary.totalPrice)} บาท
           </Text>
+          {summary.totalDeliveryPrice > 0 && (
+            <Text style={styles.summaryText}>
+              ค่าส่งรวม: {numberWithCommas(summary.totalDeliveryPrice)} บาท
+            </Text>
+          )}
         </View>
       )}
 
@@ -435,17 +482,6 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
                 />
               </Pressable>
             </View>
-
-            {totalWeight != null && totalWeight > 0 && (
-              <Pressable
-                style={styles.autoSuggestButton}
-                onPress={handleAutoSuggest}
-              >
-                <Text style={styles.autoSuggestText}>
-                  แนะนำอัตโนมัติ (น้ำหนัก {totalWeight} กก)
-                </Text>
-              </Pressable>
-            )}
 
             <FlatList
               data={Object.values(ContainerType)}

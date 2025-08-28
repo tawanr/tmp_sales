@@ -28,12 +28,14 @@ export interface ContainerSelection {
   spec: ContainerSpec;
   quantity: number;
   totalPrice: number;
+  deliveryPrice?: number; // Optional delivery price per container
 }
 
 export interface ContainerSummary {
   selections: ContainerSelection[];
   totalQuantity: number;
   totalPrice: number;
+  totalDeliveryPrice: number; // Total delivery cost for all containers
 }
 
 // Default container configurations
@@ -98,11 +100,17 @@ export const calculateContainerSummary = (
     (sum, selection) => sum + selection.totalPrice,
     0
   );
+  const totalDeliveryPrice = selections.reduce(
+    (sum, selection) =>
+      sum + (selection.deliveryPrice || 0) * selection.quantity,
+    0
+  );
 
   return {
     selections,
     totalQuantity,
     totalPrice,
+    totalDeliveryPrice,
   };
 };
 

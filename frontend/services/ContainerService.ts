@@ -65,6 +65,20 @@ export class ContainerManager {
   }
 
   /**
+   * Update delivery price per container for a specific container type
+   */
+  updateContainerDeliveryPrice(specId: string, deliveryPrice: number): void {
+    const selection = this.selections.get(specId);
+    if (selection) {
+      const updatedSelection: ContainerSelection = {
+        ...selection,
+        deliveryPrice: deliveryPrice > 0 ? deliveryPrice : undefined,
+      };
+      this.selections.set(specId, updatedSelection);
+    }
+  }
+
+  /**
    * Get container selection by spec ID
    */
   getContainer(specId: string): ContainerSelection | undefined {
@@ -111,6 +125,13 @@ export class ContainerManager {
    */
   getTotalPrice(): number {
     return this.getSummary().totalPrice;
+  }
+
+  /**
+   * Get total delivery price of all containers
+   */
+  getTotalDeliveryPrice(): number {
+    return this.getSummary().totalDeliveryPrice;
   }
 
   /**
