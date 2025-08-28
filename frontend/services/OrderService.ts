@@ -110,29 +110,9 @@ export function generateOrderSummary(
       const containerSummary = containerManager.getSummary();
       deliveryCost += containerSummary.totalPrice;
       deliveryCost += containerSummary.totalDeliveryPrice;
-    } else {
-      // Legacy container system (backward compatibility)
-      if (!packageType) {
-        text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
-        if (deliveryCost > 0 && deliveryDetails.isDeliver) {
-          text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
-        } else {
-          text += `80x${deliveryDetails.containerCount}\n`;
-        }
-        deliveryCost += 80;
-      } else {
-        text += `ค่าถุงดำ ${deliveryDetails.containerCount} ใบ\n`;
-        if (deliveryCost > 0 && deliveryDetails.isDeliver) {
-          text += `(${deliveryCost}+10)x${deliveryDetails.containerCount}\n`;
-        } else {
-          text += `10x${deliveryDetails.containerCount}\n`;
-        }
-        deliveryCost += 10;
-      }
-      deliveryCost *= deliveryDetails.containerCount;
+      text += `=${numberWithCommas(deliveryCost)}\n\n`;
     }
     totalCost += deliveryCost;
-    text += `=${numberWithCommas(deliveryCost)}\n\n`;
   }
   text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
   if (!isWithoutDetails && deliveryDetails.isDeliver) {
