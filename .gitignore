@@ -26,3 +26,4 @@ go.work.sum
 pb_data
 pocketbase
 frontend/android
+.DS_Store

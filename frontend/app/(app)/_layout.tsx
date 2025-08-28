@@ -8,10 +8,20 @@ export default function RootLayout() {
     return <Redirect href="/login" />;
   }
   return (
-    <View style={{ backgroundColor: PRIMARY_LIGHT, width: "100%", height: "100%" }}>
+    <View
+      style={{
+        backgroundColor: PRIMARY_LIGHT,
+        width: "100%",
+        height: "100%",
+        flex: 1,
+      }}
+    >
       <StatusBar barStyle={"dark-content"} />
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </View>
   );

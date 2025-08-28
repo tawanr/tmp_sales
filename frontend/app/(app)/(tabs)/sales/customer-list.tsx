@@ -123,7 +123,9 @@ const CustomerListItem = ({ customer }: { customer: Customer }) => {
             ellipsizeMode="tail"
             numberOfLines={2}
           >
-            {customer.deliveryNote}
+            {customer.deliveryNote
+              ? customer.deliveryNote
+              : customer.carRegistration}
           </Text>
         </View>
       </Pressable>
@@ -177,27 +179,28 @@ export default function CustomerList() {
           </Pressable>
         </View>
       </View>
-      <FlatList
-        data={customers}
-        renderItem={({ item }) => <CustomerListItem customer={item} />}
-        keyExtractor={(item) => item.id}
-        style={{
-          width: "100%",
-          height: "100%",
-          flex: 1,
-        }}
-        contentContainerStyle={{
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          flexDirection: "column",
-          flex: 1,
-          padding: 6,
-          rowGap: 6,
-        }}
-        onRefresh={reloadList}
-        refreshing={refreshing}
-      />
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={customers}
+          renderItem={({ item }) => <CustomerListItem customer={item} />}
+          keyExtractor={(item) => item.id}
+          style={{
+            width: "100%",
+            flex: 1,
+          }}
+          contentContainerStyle={{
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            flexDirection: "column",
+            padding: 6,
+            rowGap: 6,
+          }}
+          onRefresh={reloadList}
+          refreshing={refreshing}
+          ListFooterComponent={<View style={{ height: 50 }} />}
+        />
+      </View>
     </SafeAreaView>
   );
 }
