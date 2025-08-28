@@ -257,14 +257,6 @@ export default function Order() {
 
   const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์"];
 
-  const updateDeliveryCost = (value: string) => {
-    let cost = parseFloat(value);
-    if (isNaN(cost) || cost < 0) {
-      cost = 0;
-    }
-    changeDeliveryCost(cost);
-  };
-
   const onSubmit = () => {
     const sentOrder = finishOrder(
       orders,

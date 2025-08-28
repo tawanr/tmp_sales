@@ -196,15 +196,22 @@ export class ContainerManager {
     if (includeDetails) {
       selections.forEach((selection) => {
         const { spec, quantity, totalPrice } = selection;
-        text += `${spec.name} ${quantity} ${quantity === 1 ? "ใบ" : "ใบ"}\n`;
-        text += `${spec.price}x${quantity} = ${totalPrice} บาท\n`;
+        if (selection.deliveryPrice) {
+          text += `${spec.name} (${spec.price} + ${
+            selection.deliveryPrice
+          }) x ${quantity} = ${
+            totalPrice + selection.deliveryPrice * selection.quantity
+          } บาท\n`;
+        } else {
+          text += `${spec.name} ${spec.price} x ${quantity} = ${totalPrice} บาท\n`;
+        }
       });
     } else {
       text += `ค่าบรรจุภัณฑ์ ${summary.totalQuantity} ใบ\n`;
     }
 
     if (selections.length > 1 || includeDetails) {
-      text += `รวมค่าบรรจุภัณฑ์ ${summary.totalPrice} บาท\n\n`;
+      text += `รวม ${summary.totalPrice + summary.totalDeliveryPrice} บาท\n\n`;
     }
 
     return text;

@@ -109,6 +109,7 @@ export function generateOrderSummary(
       text += containerManager.generateSummaryText(true);
       const containerSummary = containerManager.getSummary();
       deliveryCost += containerSummary.totalPrice;
+      deliveryCost += containerSummary.totalDeliveryPrice;
     } else {
       // Legacy container system (backward compatibility)
       if (!packageType) {
