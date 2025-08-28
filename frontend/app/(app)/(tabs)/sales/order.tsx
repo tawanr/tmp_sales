@@ -9,6 +9,7 @@ import {
   removeItem,
   resetDeliveryDetails,
   useOrderStore,
+  calculateTotalWeight,
 } from "@/services/OrderService";
 import { useUserStore } from "@/services/UserService";
 import { API_URL, PRIMARY_DARK, PRIMARY_LIGHT } from "@/utils/constants";
@@ -31,6 +32,8 @@ import {
 } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 import * as Clipboard from "expo-clipboard";
+import ContainerSelector from "@/components/ContainerSelector";
+import ContainerManager from "@/services/ContainerService";
 
 const styles = StyleSheet.create({
   container: {
@@ -184,14 +187,16 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
 };
 
 export default function Order() {
-  const { orders, customer, deliveryDetails, orderOptions } = useOrderStore(
-    useShallow((state) => ({
-      orders: state.orders,
-      customer: state.customer,
-      deliveryDetails: state.deliveryDetails,
-      orderOptions: state.orderOptions,
-    }))
-  );
+  const { orders, customer, deliveryDetails, orderOptions, containerManager } =
+    useOrderStore(
+      useShallow((state) => ({
+        orders: state.orders,
+        customer: state.customer,
+        deliveryDetails: state.deliveryDetails,
+        orderOptions: state.orderOptions,
+        containerManager: state.containerManager,
+      }))
+    );
   const {
     toggleIsDelivery,
     changeContainerCount,
@@ -201,6 +206,8 @@ export default function Order() {
     toggleOrderType,
     togglePackageType,
     setProductLocation,
+    updateContainerManager,
+    syncContainerCount,
   } = useOrderStore();
   const { user } = useUserStore();
   const [summary, setSummary] = useState("");
@@ -210,6 +217,7 @@ export default function Order() {
   const [locationModalVisible, setLocationModalVisible] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const { isWithoutDetails, orderType, packageType } = orderOptions;
+  const [useAdvancedContainers, setUseAdvancedContainers] = useState(false);
 
   const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์"];
 
@@ -235,13 +243,16 @@ export default function Order() {
       customer,
       deliveryDetails,
       summary,
-      user
+      user,
+      containerManager
     );
     sentOrder
       .then(() => {
         clearItems();
         updateOrderCustomer(createEmptyCustomer());
         resetDeliveryDetails();
+        containerManager.clear();
+        updateContainerManager(containerManager);
       })
       .catch((errors) => {
         console.error(errors);
@@ -260,6 +271,27 @@ export default function Order() {
     }, 2500);
   };
 
+  const handleContainerChange = (manager: ContainerManager) => {
+    updateContainerManager(manager);
+    syncContainerCount();
+  };
+
+  const toggleAdvancedContainers = () => {
+    if (!useAdvancedContainers) {
+      // Migrating to advanced containers - convert legacy settings
+      containerManager.migrateLegacySelection(
+        packageType,
+        deliveryDetails.containerCount
+      );
+      updateContainerManager(containerManager);
+    } else {
+      // Migrating back to legacy - clear advanced containers
+      containerManager.clear();
+      updateContainerManager(containerManager);
+    }
+    setUseAdvancedContainers(!useAdvancedContainers);
+  };
+
   const toggleOptionsDialog = () => {
     setOptionsOpen(!isOptionsOpen);
   };
@@ -267,7 +299,13 @@ export default function Order() {
   useEffect(() => {
     if (!orderType) {
       setSummary(
-        generateOrderSummary(orders, customer, deliveryDetails, orderOptions)
+        generateOrderSummary(
+          orders,
+          customer,
+          deliveryDetails,
+          orderOptions,
+          containerManager
+        )
       );
     } else {
       setSummary(
@@ -286,6 +324,7 @@ export default function Order() {
     orderType,
     isWithoutDetails,
     packageType,
+    containerManager,
   ]);
 
   useEffect(() => {
@@ -360,8 +399,28 @@ export default function Order() {
             value={packageType}
             onValueChange={togglePackageType}
             ios_backgroundColor={PRIMARY_DARK}
+            disabled={useAdvancedContainers}
           />
           <Text style={{ color: !packageType ? "#aaa" : "#222" }}>ถุงดำ</Text>
+        </View>
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
+          <Text style={{ color: !useAdvancedContainers ? "#aaa" : "#222" }}>
+            บรรจุภัณฑ์แบบละเอียด
+          </Text>
+          <Switch
+            trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
+            value={useAdvancedContainers}
+            onValueChange={toggleAdvancedContainers}
+            ios_backgroundColor={PRIMARY_DARK}
+          />
         </View>
         <View
           style={{
@@ -504,8 +563,16 @@ export default function Order() {
                 }
                 changeContainerCount(deliveryDetails.containerCount - 1);
               }}
+              disabled={useAdvancedContainers}
             >
-              <Text style={{ fontSize: 26 }}>-</Text>
+              <Text
+                style={{
+                  fontSize: 26,
+                  color: useAdvancedContainers ? "#ccc" : "#000",
+                }}
+              >
+                -
+              </Text>
             </Pressable>
             <TextInput
               style={{
@@ -513,22 +580,42 @@ export default function Order() {
                 width: 30,
                 borderWidth: 1,
                 height: 30,
+                backgroundColor: useAdvancedContainers ? "#f5f5f5" : "#fff",
               }}
               value={deliveryDetails.containerCount.toString()}
               onChangeText={updateContainerCount}
               keyboardType="numeric"
               selectTextOnFocus={true}
+              editable={!useAdvancedContainers}
             />
             <Pressable
               onPress={() => {
                 changeContainerCount(deliveryDetails.containerCount + 1);
               }}
+              disabled={useAdvancedContainers}
             >
-              <Text style={{ fontSize: 26 }}>+</Text>
+              <Text
+                style={{
+                  fontSize: 26,
+                  color: useAdvancedContainers ? "#ccc" : "#000",
+                }}
+              >
+                +
+              </Text>
             </Pressable>
           </View>
         </View>
       </View>
+
+      {/* Advanced Container Selector */}
+      {deliveryDetails.isDeliver && useAdvancedContainers && (
+        <ContainerSelector
+          containerManager={containerManager}
+          onContainerChange={handleContainerChange}
+          totalWeight={calculateTotalWeight(orders)}
+          style={{ marginHorizontal: 15 }}
+        />
+      )}
       <View
         style={{
           width: "90%",

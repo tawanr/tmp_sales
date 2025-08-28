@@ -4,6 +4,8 @@ import { Customer } from "./CustomerService";
 import { numberWithCommas } from "@/utils/utils";
 import pb from "@/utils/pocketbase";
 import { User } from "./UserService";
+import ContainerManager from "./ContainerService";
+import { ContainerSelection } from "@/types/container";
 
 export type CompleteOrder = {
   customer: string;
@@ -24,14 +26,15 @@ export interface OrderItem {
 export interface DeliveryDetails {
   isDeliver: boolean;
   deliveryCost: number;
-  containerCount: number;
+  containerCount: number; // Kept for backward compatibility
   productLocation: string;
+  containers?: object; // Serialized container selections
 }
 
 export interface OrderOptions {
   isWithoutDetails: boolean;
   orderType: boolean;
-  packageType: boolean;
+  packageType: boolean; // Kept for backward compatibility
 }
 
 type OrderState = {
@@ -39,6 +42,7 @@ type OrderState = {
   customer: Customer;
   deliveryDetails: DeliveryDetails;
   orderOptions: OrderOptions;
+  containerManager: ContainerManager; // New container manager
 };
 
 type OrderActions = {
@@ -53,6 +57,8 @@ type OrderActions = {
   toggleOrderType: () => void;
   togglePackageType: () => void;
   setProductLocation: (value: string) => void;
+  updateContainerManager: (manager: ContainerManager) => void; // New container action
+  syncContainerCount: () => void; // Sync legacy container count
 };
 
 function generateOrderText(order: OrderItem): string {
@@ -68,7 +74,8 @@ export function generateOrderSummary(
   orders: Map<string, OrderItem>,
   customer: Customer,
   deliveryDetails: DeliveryDetails,
-  orderOptions: OrderOptions
+  orderOptions: OrderOptions,
+  containerManager?: ContainerManager
 ): string {
   const date = new Date();
   const { isWithoutDetails, orderType, packageType } = orderOptions;
@@ -94,25 +101,35 @@ export function generateOrderSummary(
     text += "ค่าส่ง+";
     deliveryCost = deliveryDetails.deliveryCost;
   }
+
+  // Use new container system if available, otherwise fall back to legacy
   if (deliveryDetails.isDeliver) {
-    if (!packageType) {
-      text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
-      if (deliveryCost > 0 && deliveryDetails.isDeliver) {
-        text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
-      } else {
-        text += `80x${deliveryDetails.containerCount}\n`;
-      }
-      deliveryCost += 80;
+    if (containerManager && !containerManager.isEmpty()) {
+      // Use new container system
+      text += containerManager.generateSummaryText(true);
+      const containerSummary = containerManager.getSummary();
+      deliveryCost += containerSummary.totalPrice;
     } else {
-      text += `ค่าถุงดำ ${deliveryDetails.containerCount} ใบ\n`;
-      if (deliveryCost > 0 && deliveryDetails.isDeliver) {
-        text += `(${deliveryCost}+10)x${deliveryDetails.containerCount}\n`;
+      // Legacy container system (backward compatibility)
+      if (!packageType) {
+        text += `ค่าโฟม ${deliveryDetails.containerCount} ใบ\n`;
+        if (deliveryCost > 0 && deliveryDetails.isDeliver) {
+          text += `(${deliveryCost}+80)x${deliveryDetails.containerCount}\n`;
+        } else {
+          text += `80x${deliveryDetails.containerCount}\n`;
+        }
+        deliveryCost += 80;
       } else {
-        text += `10x${deliveryDetails.containerCount}\n`;
+        text += `ค่าถุงดำ ${deliveryDetails.containerCount} ใบ\n`;
+        if (deliveryCost > 0 && deliveryDetails.isDeliver) {
+          text += `(${deliveryCost}+10)x${deliveryDetails.containerCount}\n`;
+        } else {
+          text += `10x${deliveryDetails.containerCount}\n`;
+        }
+        deliveryCost += 10;
       }
-      deliveryCost += 10;
+      deliveryCost *= deliveryDetails.containerCount;
     }
-    deliveryCost *= deliveryDetails.containerCount;
     totalCost += deliveryCost;
     text += `=${numberWithCommas(deliveryCost)}\n\n`;
   }
@@ -169,6 +186,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     orderType: false,
     packageType: false,
   },
+  containerManager: new ContainerManager(), // Initialize container manager
   clearCustomer: () => {
     set((state: OrderState) => ({
       ...state,
@@ -262,6 +280,26 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
       },
     }));
   },
+  updateContainerManager: (manager: ContainerManager) => {
+    set((state: OrderState) => ({
+      ...state,
+      containerManager: manager,
+      deliveryDetails: {
+        ...state.deliveryDetails,
+        containers: manager.serialize(),
+        containerCount: manager.getTotalQuantity(), // Sync legacy count
+      },
+    }));
+  },
+  syncContainerCount: () => {
+    set((state: OrderState) => ({
+      ...state,
+      deliveryDetails: {
+        ...state.deliveryDetails,
+        containerCount: state.containerManager.getTotalQuantity(),
+      },
+    }));
+  },
 }));
 
 // https://zustand.docs.pmnd.rs/guides/maps-and-sets-usage
@@ -298,12 +336,21 @@ export function resetDeliveryDetails() {
   changeDeliveryCost(0);
 }
 
+export function calculateTotalWeight(orders: Map<string, OrderItem>): number {
+  let totalWeight = 0;
+  orders.forEach((order) => {
+    totalWeight += order.product.kg * order.count;
+  });
+  return totalWeight;
+}
+
 export function finishOrder(
   orders: Map<string, OrderItem>,
   customer: Customer,
   deliveryDetails: DeliveryDetails,
   summary: string,
-  user: User
+  user: User,
+  containerManager?: ContainerManager
 ) {
   const completeOrder: CompleteOrder = {
     customer: customer.id,
@@ -312,7 +359,12 @@ export function finishOrder(
     summary: summary,
     isEnable: true,
     products: Array.from(orders.keys()),
-    deliveryDetails: deliveryDetails,
+    deliveryDetails: {
+      ...deliveryDetails,
+      containers: containerManager
+        ? containerManager.serialize()
+        : deliveryDetails.containers,
+    },
     user: user.id,
   };
   return createOrder(completeOrder);
