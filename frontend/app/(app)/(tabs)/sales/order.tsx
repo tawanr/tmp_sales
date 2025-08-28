@@ -124,25 +124,26 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   containerSection: {
-    width: "100%",
+    width: "60%",
   },
   containerHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
+    alignContent: "center",
     backgroundColor: "#f8f9fa",
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderTopColor: "#e9ecef",
-    borderBottomColor: "#e9ecef",
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+    height: 40,
   },
   containerHeaderText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     color: "#333",
     flex: 1,
+    textAlign: "center",
   },
   fixedBottomSection: {
     width: "100%",
@@ -516,23 +517,19 @@ export default function Order() {
             />
           </View>
           {deliveryDetails.isDeliver ? (
-            <View
-              id="deliveryDetails"
-              style={[styles.countControls, { marginRight: 0 }]}
-            >
-              <Text>ค่าขนส่ง</Text>
-              <TextInput
-                style={{
-                  textAlign: "center",
-                  width: 50,
-                  borderWidth: 1,
-                  height: 30,
-                }}
-                value={deliveryDetails.deliveryCost.toString()}
-                onChangeText={updateDeliveryCost}
-                keyboardType="numeric"
-                selectTextOnFocus={true}
-              />
+            <View style={styles.containerSection}>
+              <Pressable
+                style={styles.containerHeader}
+                onPress={() => setIsContainerSelectorVisible(true)}
+              >
+                <Text style={styles.containerHeaderText}>
+                  {`บรรจุภัณฑ์${
+                    containerManager && containerManager.getTotalQuantity() > 0
+                      ? ` (${containerManager.getTotalQuantity()} ใบ)`
+                      : " - ยังไม่ได้เลือก"
+                  }`}
+                </Text>
+              </Pressable>
             </View>
           ) : (
             <View style={[styles.countControls, { marginRight: 0 }]}>
@@ -555,38 +552,6 @@ export default function Order() {
           )}
         </View>
       </View>
-      {/* Collapsible Container Selector Section */}
-      {deliveryDetails.isDeliver === true && (
-        <>
-          <View
-            style={{
-              borderBottomColor: "#e9ecef",
-              borderBottomWidth: 1,
-              width: "100%",
-              marginVertical: 8,
-            }}
-          />
-          <View style={styles.containerSection}>
-            <Pressable
-              style={styles.containerHeader}
-              onPress={() => setIsContainerSelectorVisible(true)}
-            >
-              <Text style={styles.containerHeaderText}>
-                {`บรรจุภัณฑ์${
-                  containerManager && containerManager.getTotalQuantity() > 0
-                    ? ` (${containerManager.getTotalQuantity()} ใบ - ${containerManager.getTotalPrice()} บาท)`
-                    : " - ยังไม่ได้เลือก"
-                }`}
-              </Text>
-              <FontAwesome
-                name="edit"
-                size={16}
-                color="#666"
-              />
-            </Pressable>
-          </View>
-        </>
-      )}
 
       {/* Floating Container Selector Modal */}
       <Modal
