@@ -1,8 +1,3 @@
-/**
- * Container Selection Component
- * Advanced container type and quantity selection with support for multiple container types
- */
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -384,6 +379,7 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
   };
 
   const summary = containerManager.getSummary();
+  console.log(selectedContainers);
 
   return (
     <View style={[styles.containerSection, style]}>

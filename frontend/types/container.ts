@@ -6,8 +6,6 @@
 export enum ContainerType {
   FOAM = "foam",
   BLACK_BAG = "black_bag",
-  BOX = "box",
-  COOLER = "cooler",
 }
 
 export enum ContainerSize {
@@ -45,87 +43,27 @@ export const CONTAINER_SPECS: Record<string, ContainerSpec> = {
     type: ContainerType.FOAM,
     size: ContainerSize.SMALL,
     name: "โฟมเล็ก",
-    price: 60,
+    price: 65,
     capacity: 5,
     description: "โฟมขนาดเล็ก สำหรับสินค้าไม่เกิน 5 กก",
-  },
-  foam_medium: {
-    type: ContainerType.FOAM,
-    size: ContainerSize.MEDIUM,
-    name: "โฟมกลาง",
-    price: 80,
-    capacity: 10,
-    description: "โฟมขนาดกลาง สำหรับสินค้า 5-10 กก",
   },
   foam_large: {
     type: ContainerType.FOAM,
     size: ContainerSize.LARGE,
     name: "โฟมใหญ่",
-    price: 100,
+    price: 80,
     capacity: 15,
     description: "โฟมขนาดใหญ่ สำหรับสินค้า 10-15 กก",
   },
 
   // Black bag containers
-  black_bag_small: {
-    type: ContainerType.BLACK_BAG,
-    size: ContainerSize.SMALL,
-    name: "ถุงดำเล็ก",
-    price: 5,
-    capacity: 3,
-    description: "ถุงดำขนาดเล็ก สำหรับสินค้าไม่เกิน 3 กก",
-  },
-  black_bag_medium: {
-    type: ContainerType.BLACK_BAG,
-    size: ContainerSize.MEDIUM,
-    name: "ถุงดำกลาง",
-    price: 10,
-    capacity: 7,
-    description: "ถุงดำขนาดกลาง สำหรับสินค้า 3-7 กก",
-  },
-  black_bag_large: {
+  black_bag: {
     type: ContainerType.BLACK_BAG,
     size: ContainerSize.LARGE,
-    name: "ถุงดำใหญ่",
+    name: "ถุงดำ",
     price: 15,
     capacity: 12,
     description: "ถุงดำขนาดใหญ่ สำหรับสินค้า 7-12 กก",
-  },
-
-  // Box containers
-  box_medium: {
-    type: ContainerType.BOX,
-    size: ContainerSize.MEDIUM,
-    name: "กล่องกลาง",
-    price: 25,
-    capacity: 8,
-    description: "กล่องกระดาษแข็งขนาดกลาง",
-  },
-  box_large: {
-    type: ContainerType.BOX,
-    size: ContainerSize.LARGE,
-    name: "กล่องใหญ่",
-    price: 35,
-    capacity: 15,
-    description: "กล่องกระดาษแข็งขนาดใหญ่",
-  },
-
-  // Cooler containers
-  cooler_medium: {
-    type: ContainerType.COOLER,
-    size: ContainerSize.MEDIUM,
-    name: "ถุงเก็บความเย็นกลาง",
-    price: 45,
-    capacity: 6,
-    description: "ถุงเก็บความเย็นขนาดกลาง",
-  },
-  cooler_large: {
-    type: ContainerType.COOLER,
-    size: ContainerSize.LARGE,
-    name: "ถุงเก็บความเย็นใหญ่",
-    price: 65,
-    capacity: 12,
-    description: "ถุงเก็บความเย็นขนาดใหญ่",
   },
 };
 

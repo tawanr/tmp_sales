@@ -23,6 +23,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -112,6 +113,42 @@ const styles = StyleSheet.create({
       height: 1,
     },
   },
+  productSection: {
+    flex: 1,
+    minHeight: 120, // Ensure at least space for one product item
+    width: "100%",
+  },
+  productTitle: {
+    marginBottom: 5,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  containerSection: {
+    width: "100%",
+  },
+  containerHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderTopColor: "#e9ecef",
+    borderBottomColor: "#e9ecef",
+  },
+  containerHeaderText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    flex: 1,
+  },
+  fixedBottomSection: {
+    width: "100%",
+    backgroundColor: "#fff",
+    paddingTop: 10,
+  },
 });
 
 const OrderListItem = ({ order }: { order: OrderItem }) => {
@@ -199,15 +236,12 @@ export default function Order() {
     );
   const {
     toggleIsDelivery,
-    changeContainerCount,
     changeDeliveryCost,
     updateOrderCustomer,
     toggleIsWithoutDetails,
     toggleOrderType,
-    togglePackageType,
     setProductLocation,
     updateContainerManager,
-    syncContainerCount,
   } = useOrderStore();
   const { user } = useUserStore();
   const [summary, setSummary] = useState("");
@@ -216,18 +250,11 @@ export default function Order() {
   const [isOptionsOpen, setOptionsOpen] = useState(false);
   const [locationModalVisible, setLocationModalVisible] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const { isWithoutDetails, orderType, packageType } = orderOptions;
-  const [useAdvancedContainers, setUseAdvancedContainers] = useState(false);
+  const { isWithoutDetails, orderType } = orderOptions;
+  const [isContainerSelectorVisible, setIsContainerSelectorVisible] =
+    useState(false);
 
   const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์"];
-
-  const updateContainerCount = (value: string) => {
-    let count = parseInt(value);
-    if (isNaN(count) || count < 0) {
-      count = 0;
-    }
-    changeContainerCount(count);
-  };
 
   const updateDeliveryCost = (value: string) => {
     let cost = parseFloat(value);
@@ -251,8 +278,13 @@ export default function Order() {
         clearItems();
         updateOrderCustomer(createEmptyCustomer());
         resetDeliveryDetails();
-        containerManager.clear();
-        updateContainerManager(containerManager);
+        // Clear container manager and update state
+        if (containerManager) {
+          containerManager.clear();
+          updateContainerManager(containerManager);
+        } else {
+          updateContainerManager(new ContainerManager());
+        }
       })
       .catch((errors) => {
         console.error(errors);
@@ -272,24 +304,8 @@ export default function Order() {
   };
 
   const handleContainerChange = (manager: ContainerManager) => {
+    if (!manager) return;
     updateContainerManager(manager);
-    syncContainerCount();
-  };
-
-  const toggleAdvancedContainers = () => {
-    if (!useAdvancedContainers) {
-      // Migrating to advanced containers - convert legacy settings
-      containerManager.migrateLegacySelection(
-        packageType,
-        deliveryDetails.containerCount
-      );
-      updateContainerManager(containerManager);
-    } else {
-      // Migrating back to legacy - clear advanced containers
-      containerManager.clear();
-      updateContainerManager(containerManager);
-    }
-    setUseAdvancedContainers(!useAdvancedContainers);
   };
 
   const toggleOptionsDialog = () => {
@@ -323,13 +339,32 @@ export default function Order() {
     deliveryDetails,
     orderType,
     isWithoutDetails,
-    packageType,
     containerManager,
   ]);
 
   useEffect(() => {
     setProductLocation(selectedLocation);
   }, [selectedLocation]);
+
+  // Initialize container manager on component mount
+  // useEffect(() => {
+  //   // Ensure the container manager is properly initialized
+  //   if (!containerManager) {
+  //     updateContainerManager(new ContainerManager());
+  //   } else if (
+  //     containerManager &&
+  //     containerManager.isEmpty() &&
+  //     deliveryDetails.containers
+  //   ) {
+  //     try {
+  //       containerManager.deserialize(deliveryDetails.containers);
+  //       updateContainerManager(containerManager);
+  //     } catch (error) {
+  //       console.warn("Failed to deserialize container data:", error);
+  //     }
+  //   }
+  // }, [deliveryDetails.containers]);
+  // }, [containerManager, deliveryDetails.containers, updateContainerManager]);
 
   return (
     <KeyboardAvoidingView
@@ -384,44 +419,7 @@ export default function Order() {
             เบิกสินค้า
           </Text>
         </View>
-        <View
-          style={{
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={{ color: packageType ? "#aaa" : "#222" }}>โฟม</Text>
-          <Switch
-            trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
-            value={packageType}
-            onValueChange={togglePackageType}
-            ios_backgroundColor={PRIMARY_DARK}
-            disabled={useAdvancedContainers}
-          />
-          <Text style={{ color: !packageType ? "#aaa" : "#222" }}>ถุงดำ</Text>
-        </View>
-        <View
-          style={{
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={{ color: !useAdvancedContainers ? "#aaa" : "#222" }}>
-            บรรจุภัณฑ์แบบละเอียด
-          </Text>
-          <Switch
-            trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
-            value={useAdvancedContainers}
-            onValueChange={toggleAdvancedContainers}
-            ios_backgroundColor={PRIMARY_DARK}
-          />
-        </View>
+
         <View
           style={{
             width: "100%",
@@ -470,31 +468,31 @@ export default function Order() {
           marginVertical: 8,
         }}
       />
-      <Text style={{ marginBottom: 5, fontWeight: "bold" }}>รายการสินค้า</Text>
-      <FlatList
-        data={ordersList}
-        renderItem={({ item }) => <OrderListItem order={item} />}
-        keyExtractor={(item) => item.product.id}
-        style={{
-          width: "100%",
-        }}
-        contentContainerStyle={{
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          flexDirection: "column",
-          padding: 6,
-          rowGap: 6,
-        }}
-      />
-      <View
-        style={{
-          borderBottomColor: "#eee",
-          borderBottomWidth: 1,
-          width: "90%",
-          marginTop: 15,
-        }}
-      />
+      <Text style={[styles.productTitle]}>รายการสินค้า</Text>
+      {/* Product List Section - Flexible height with minimum space */}
+      <View style={styles.productSection}>
+        <FlatList
+          data={ordersList}
+          renderItem={({ item }) => <OrderListItem order={item} />}
+          keyExtractor={(item) => item.product.id}
+          style={{
+            flex: 1,
+            width: "100%",
+          }}
+          contentContainerStyle={{
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            flexDirection: "column",
+            padding: 6,
+            rowGap: 6,
+            flexGrow: 1,
+          }}
+          showsVerticalScrollIndicator={true}
+          nestedScrollEnabled={true}
+        />
+      </View>
+      {/* Delivery Options Section */}
       <View
         style={{
           width: "100%",
@@ -555,149 +553,211 @@ export default function Order() {
               </Pressable>
             </View>
           )}
-          <View style={[styles.countControls, { marginRight: 0 }]}>
+        </View>
+      </View>
+      {/* Collapsible Container Selector Section */}
+      {deliveryDetails.isDeliver === true && (
+        <>
+          <View
+            style={{
+              borderBottomColor: "#e9ecef",
+              borderBottomWidth: 1,
+              width: "100%",
+              marginVertical: 8,
+            }}
+          />
+          <View style={styles.containerSection}>
             <Pressable
-              onPress={() => {
-                if (deliveryDetails.containerCount === 0) {
-                  return;
-                }
-                changeContainerCount(deliveryDetails.containerCount - 1);
-              }}
-              disabled={useAdvancedContainers}
+              style={styles.containerHeader}
+              onPress={() => setIsContainerSelectorVisible(true)}
             >
-              <Text
-                style={{
-                  fontSize: 26,
-                  color: useAdvancedContainers ? "#ccc" : "#000",
-                }}
-              >
-                -
+              <Text style={styles.containerHeaderText}>
+                {`บรรจุภัณฑ์${
+                  containerManager && containerManager.getTotalQuantity() > 0
+                    ? ` (${containerManager.getTotalQuantity()} ใบ - ${containerManager.getTotalPrice()} บาท)`
+                    : " - ยังไม่ได้เลือก"
+                }`}
               </Text>
+              <FontAwesome
+                name="edit"
+                size={16}
+                color="#666"
+              />
             </Pressable>
-            <TextInput
+          </View>
+        </>
+      )}
+
+      {/* Floating Container Selector Modal */}
+      <Modal
+        visible={isContainerSelectorVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsContainerSelectorVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 12,
+              width: "100%",
+              maxWidth: 500,
+              maxHeight: "80%",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 8,
+              elevation: 5,
+            }}
+          >
+            <View
               style={{
-                textAlign: "center",
-                width: 30,
-                borderWidth: 1,
-                height: 30,
-                backgroundColor: useAdvancedContainers ? "#f5f5f5" : "#fff",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingHorizontal: 20,
+                paddingVertical: 15,
+                borderBottomWidth: 1,
+                borderBottomColor: "#e9ecef",
               }}
-              value={deliveryDetails.containerCount.toString()}
-              onChangeText={updateContainerCount}
-              keyboardType="numeric"
-              selectTextOnFocus={true}
-              editable={!useAdvancedContainers}
-            />
-            <Pressable
-              onPress={() => {
-                changeContainerCount(deliveryDetails.containerCount + 1);
-              }}
-              disabled={useAdvancedContainers}
             >
               <Text
                 style={{
-                  fontSize: 26,
-                  color: useAdvancedContainers ? "#ccc" : "#000",
+                  fontSize: 18,
+                  fontWeight: "bold",
                 }}
               >
-                +
+                เลือกบรรจุภัณฑ์
               </Text>
+              <Pressable
+                onPress={() => setIsContainerSelectorVisible(false)}
+                style={{
+                  padding: 8,
+                  borderRadius: 20,
+                  backgroundColor: "#f8f9fa",
+                }}
+              >
+                <FontAwesome
+                  name="times"
+                  size={16}
+                  color="#666"
+                />
+              </Pressable>
+            </View>
+
+            {containerManager && (
+              <ScrollView
+                style={{ paddingHorizontal: 20, paddingVertical: 10 }}
+                showsVerticalScrollIndicator={true}
+              >
+                <ContainerSelector
+                  containerManager={containerManager}
+                  onContainerChange={handleContainerChange}
+                  totalWeight={calculateTotalWeight(orders)}
+                  style={{ marginHorizontal: 0 }}
+                />
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
+      {/* Fixed Bottom Section */}
+      <View style={styles.fixedBottomSection}>
+        <View
+          style={{
+            width: "90%",
+            marginBottom: 8,
+            justifyContent: "center",
+            alignItems: "center",
+            alignSelf: "center",
+          }}
+        >
+          <TextInput
+            multiline={true}
+            value={summary}
+            onChangeText={setSummary}
+            style={{
+              width: "100%",
+              height: 125,
+              marginVertical: 8,
+              borderWidth: 1,
+              borderColor: "#eee",
+              borderRadius: 10,
+            }}
+            editable={false}
+            selectTextOnFocus={true}
+          />
+          <View
+            style={{
+              position: "absolute",
+              top: 20,
+              right: 15,
+              flexDirection: "row",
+            }}
+          >
+            <Animated.Text
+              style={{
+                marginRight: 5,
+                color: "#999",
+                opacity: copiedOpacity,
+              }}
+            >
+              คัดลอก
+            </Animated.Text>
+            <Pressable onPress={copyToClipboard}>
+              <FontAwesome
+                name="copy"
+                size={20}
+                color="#888"
+              />
+            </Pressable>
+          </View>
+        </View>
+        <View style={{ flexDirection: "row", columnGap: 10 }}>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#f00",
+              height: 35,
+              width: 100,
+              marginBottom: 10,
+              borderRadius: 6,
+            }}
+          >
+            <Pressable onPress={clearItems}>
+              <Text style={{ color: "#fff" }}>ล้าง</Text>
+            </Pressable>
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "#00d",
+              height: 35,
+              width: 100,
+              marginBottom: 10,
+              borderRadius: 6,
+            }}
+          >
+            <Pressable onPress={onSubmit}>
+              <Text style={{ color: "#fff" }}>เสร็จสิ้น</Text>
             </Pressable>
           </View>
         </View>
       </View>
-
-      {/* Advanced Container Selector */}
-      {deliveryDetails.isDeliver && useAdvancedContainers && (
-        <ContainerSelector
-          containerManager={containerManager}
-          onContainerChange={handleContainerChange}
-          totalWeight={calculateTotalWeight(orders)}
-          style={{ marginHorizontal: 15 }}
-        />
-      )}
-      <View
-        style={{
-          width: "90%",
-          marginBottom: 8,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <TextInput
-          multiline={true}
-          value={summary}
-          onChangeText={setSummary}
-          style={{
-            width: "100%",
-            height: 125,
-            marginVertical: 8,
-            borderWidth: 1,
-            borderColor: "#eee",
-            borderRadius: 10,
-          }}
-          editable={false}
-          selectTextOnFocus={true}
-        />
-        <View
-          style={{
-            position: "absolute",
-            top: 20,
-            right: 15,
-            flexDirection: "row",
-          }}
-        >
-          <Animated.Text
-            style={{
-              marginRight: 5,
-              color: "#999",
-              opacity: copiedOpacity,
-            }}
-          >
-            คัดลอก
-          </Animated.Text>
-          <Pressable onPress={copyToClipboard}>
-            <FontAwesome
-              name="copy"
-              size={20}
-              color="#888"
-            />
-          </Pressable>
-        </View>
-      </View>
-      <View style={{ flexDirection: "row", columnGap: 10 }}>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#f00",
-            height: 35,
-            width: 100,
-            marginBottom: 10,
-            borderRadius: 6,
-          }}
-        >
-          <Pressable onPress={clearItems}>
-            <Text style={{ color: "#fff" }}>ล้าง</Text>
-          </Pressable>
-        </View>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#00d",
-            height: 35,
-            width: 100,
-            marginBottom: 10,
-            borderRadius: 6,
-          }}
-        >
-          <Pressable onPress={onSubmit}>
-            <Text style={{ color: "#fff" }}>เสร็จสิ้น</Text>
-          </Pressable>
-        </View>
-      </View>
-
+      {/* End fixedBottomSection */}
       {/* Location Selection Modal */}
       <Modal
         visible={locationModalVisible}
