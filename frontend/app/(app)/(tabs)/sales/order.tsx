@@ -339,26 +339,6 @@ export default function Order() {
     setProductLocation(selectedLocation);
   }, [selectedLocation]);
 
-  // Initialize container manager on component mount
-  // useEffect(() => {
-  //   // Ensure the container manager is properly initialized
-  //   if (!containerManager) {
-  //     updateContainerManager(new ContainerManager());
-  //   } else if (
-  //     containerManager &&
-  //     containerManager.isEmpty() &&
-  //     deliveryDetails.containers
-  //   ) {
-  //     try {
-  //       containerManager.deserialize(deliveryDetails.containers);
-  //       updateContainerManager(containerManager);
-  //     } catch (error) {
-  //       console.warn("Failed to deserialize container data:", error);
-  //     }
-  //   }
-  // }, [deliveryDetails.containers]);
-  // }, [containerManager, deliveryDetails.containers, updateContainerManager]);
-
   return (
     <KeyboardAvoidingView
       behavior="padding"

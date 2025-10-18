@@ -61,9 +61,16 @@ type OrderActions = {
   syncContainerCount: () => void; // Sync legacy container count
 };
 
-function generateOrderText(order: OrderItem): string {
+function generateOrderHeader(order: OrderItem): string {
   const { product, count } = order;
   let text = `${product.label} = ${count} ${product.unit}\n`;
+  return text;
+}
+
+function generateOrderText(order: OrderItem): string {
+  const { product, count } = order;
+  // let text = `${product.label} = ${count} ${product.unit}\n`;
+  let text = generateOrderHeader(order);
   text += `${count}x${product.kg}x${numberWithCommas(
     product.price
   )}\n=${numberWithCommas(product.price * product.kg * count)}\n\n`;
@@ -98,21 +105,23 @@ export function generateOrderSummary(
     totalCost += order.product.price * order.count * order.product.kg;
   });
 
-  // Use new container system if available, otherwise fall back to legacy
   if (deliveryDetails.isDeliver) {
     if (containerManager && !containerManager.isEmpty()) {
-      // Use new container system
       text += containerManager.generateSummaryText(true);
       const containerSummary = containerManager.getSummary();
       deliveryCost += containerSummary.totalPrice;
       deliveryCost += containerSummary.totalDeliveryPrice;
-      // text += `=${numberWithCommas(deliveryCost)}\n\n`;
     }
     totalCost += deliveryCost;
   }
-  text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
+  text += `\nรวม ${numberWithCommas(totalCost)} บาท\n\n`;
   if (!isWithoutDetails && deliveryDetails.isDeliver) {
-    text += `ส่ง\n`;
+    text += `---\n`;
+    text += `ส่ง ${customer.deliveryService}\n`;
+    orders.forEach((order) => {
+      text += generateOrderHeader(order);
+    });
+    text += `\nส่ง\n`;
     text += `${customer.deliveryNote}\n`;
   }
   return text;

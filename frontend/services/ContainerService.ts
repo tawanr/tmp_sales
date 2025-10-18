@@ -210,9 +210,9 @@ export class ContainerManager {
       text += `ค่าบรรจุภัณฑ์ ${summary.totalQuantity} ใบ\n`;
     }
 
-    if (selections.length > 1 || includeDetails) {
-      text += `= ${summary.totalPrice + summary.totalDeliveryPrice}\n\n`;
-    }
+    // if (selections.length > 1 || includeDetails) {
+    //   text += `= ${summary.totalPrice + summary.totalDeliveryPrice}\n\n`;
+    // }
 
     return text;
   }
