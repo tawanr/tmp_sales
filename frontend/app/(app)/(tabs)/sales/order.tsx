@@ -255,7 +255,7 @@ export default function Order() {
   const [isContainerSelectorVisible, setIsContainerSelectorVisible] =
     useState(false);
 
-  const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์"];
+  const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์", "เบิก MMF"];
 
   const onSubmit = () => {
     const sentOrder = finishOrder(
