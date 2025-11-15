@@ -117,12 +117,16 @@ export function generateOrderSummary(
   text += `\nรวม ${numberWithCommas(totalCost)} บาท\n\n`;
   if (!isWithoutDetails && deliveryDetails.isDeliver) {
     text += `---\n`;
-    text += `ส่ง ${customer.deliveryService}\n`;
+    if (customer.deliveryService.length > 0) {
+      text += `ส่ง ${customer.deliveryService}\n`;
+    }
     orders.forEach((order) => {
       text += generateOrderHeader(order);
     });
-    text += `\nส่ง\n`;
-    text += `${customer.deliveryNote}\n`;
+    if (customer.deliveryNote.length > 0) {
+      text += `\nส่ง\n`;
+      text += `${customer.deliveryNote}\n`;
+    }
   }
   return text;
 }
