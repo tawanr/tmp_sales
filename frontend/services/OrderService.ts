@@ -114,7 +114,7 @@ export function generateOrderSummary(
     }
     totalCost += deliveryCost;
   }
-  text += `\nรวม ${numberWithCommas(totalCost)} บาท\n\n`;
+  text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
   if (!isWithoutDetails && deliveryDetails.isDeliver) {
     text += `---\n`;
     if (customer.deliveryService.length > 0) {
@@ -123,10 +123,7 @@ export function generateOrderSummary(
     orders.forEach((order) => {
       text += generateOrderHeader(order);
     });
-    if (customer.deliveryNote.length > 0) {
-      text += `\nส่ง\n`;
-      text += `${customer.deliveryNote}\n`;
-    }
+    text += `${customer.deliveryNote}\n`;
   }
   return text;
 }

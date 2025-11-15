@@ -205,6 +205,7 @@ export class ContainerManager {
         } else {
           text += `${spec.name} ${spec.price} x ${quantity} = ${totalPrice}\n`;
         }
+        text += `\n`;
       });
     } else {
       text += `ค่าบรรจุภัณฑ์ ${summary.totalQuantity} ใบ\n`;

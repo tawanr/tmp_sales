@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
     gap: 10,
   },
   customerSelectButton: {
@@ -300,6 +300,15 @@ export default function Order() {
     }, 2500);
   };
 
+  const pasteToDeliveryNote = async () => {
+    try {
+      const clipboardText = await Clipboard.getStringAsync();
+      updateOrderCustomer({ ...customer, deliveryNote: clipboardText });
+    } catch (error) {
+      console.error("Failed to paste from clipboard:", error);
+    }
+  };
+
   const handleContainerChange = (manager: ContainerManager) => {
     if (!manager) return;
     updateContainerManager(manager);
@@ -416,18 +425,51 @@ export default function Order() {
         </View>
       </View>
       <View style={[styles.customerDetails]}>
-        <View style={{ flex: 1, flexDirection: "row" }}>
-          <View>
-            <Text>ชื่อลูกค้า: </Text>
-            <Text style={{ fontWeight: "bold" }}>{customer.name || "-"}</Text>
-          </View>
-        </View>
-        <View>
-          <Link href="/sales/customer-list">
-            <View style={[styles.customerSelectButton]}>
-              <Text style={{ color: "#fff" }}>เลือก</Text>
-            </View>
-          </Link>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Text>ลูกค้า:</Text>
+          <TextInput
+            placeholder="ชื่อลูกค้า"
+            value={customer.name}
+            onChangeText={(text) =>
+              updateOrderCustomer({ ...customer, name: text })
+            }
+            style={{
+              flex: 1,
+              borderWidth: 1,
+              borderColor: "#e9ecef",
+              borderRadius: 5,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              height: 40,
+            }}
+          />
+          <Pressable
+            onPress={pasteToDeliveryNote}
+            style={{
+              padding: 8,
+              borderRadius: 5,
+              backgroundColor: "#f8f9fa",
+              borderWidth: 1,
+              borderColor: "#e9ecef",
+              justifyContent: "center",
+              alignItems: "center",
+              height: 40,
+              width: 40,
+            }}
+          >
+            <FontAwesome
+              name="paste"
+              size={16}
+              color="#333"
+            />
+          </Pressable>
         </View>
         <View>
           <Link href="/sales/customer">
