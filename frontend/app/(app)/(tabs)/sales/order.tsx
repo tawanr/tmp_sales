@@ -35,6 +35,7 @@ import { useShallow } from "zustand/react/shallow";
 import * as Clipboard from "expo-clipboard";
 import ContainerSelector from "@/components/ContainerSelector";
 import ContainerManager from "@/services/ContainerService";
+import Button from "@/components/Button";
 
 const styles = StyleSheet.create({
   container: {
@@ -732,74 +733,18 @@ export default function Order() {
             marginBottom: 8,
           }}
         >
-          <Pressable
+          <Button
+            title="ล้าง"
             onPress={clearItems}
-            style={({ pressed }) => [
-              {
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#ef4444",
-                height: 40,
-                minWidth: 100,
-                paddingHorizontal: 20,
-                marginBottom: 10,
-                borderRadius: 8,
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.08,
-                shadowRadius: 2,
-                elevation: 2,
-                opacity: pressed ? 0.85 : 1,
-              },
-            ]}
-          >
-            <Text
-              style={{
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: "600",
-              }}
-            >
-              ล้าง
-            </Text>
-          </Pressable>
-          <Pressable
+            variant="destructive"
+            style={{ marginBottom: 10 }}
+          />
+          <Button
+            title="เสร็จสิ้น"
             onPress={onSubmit}
-            style={({ pressed }) => [
-              {
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: PRIMARY_LIGHT,
-                height: 40,
-                minWidth: 100,
-                paddingHorizontal: 20,
-                marginBottom: 10,
-                borderRadius: 8,
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.1,
-                shadowRadius: 2,
-                elevation: 2,
-                opacity: pressed ? 0.85 : 1,
-              },
-            ]}
-          >
-            <Text
-              style={{
-                color: "#fff",
-                fontSize: 15,
-                fontWeight: "600",
-              }}
-            >
-              เสร็จสิ้น
-            </Text>
-          </Pressable>
+            variant="primary"
+            style={{ marginBottom: 10 }}
+          />
         </View>
       </View>
       {/* End fixedBottomSection */}
