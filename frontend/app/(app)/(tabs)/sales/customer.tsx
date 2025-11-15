@@ -76,18 +76,6 @@ export default function Customer() {
 
   return (
     <View style={[styles.container]}>
-      {/* <View style={[styles.fullButton]}>
-        <Pressable
-          style={[styles.fullButton]}
-          onPress={() => router.push("/sales/customer-list")}
-        >
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <Text style={{ color: "#fff" }}>เลือกลูกค้า</Text>
-          </View>
-        </Pressable>
-      </View> */}
       <View style={{ width: "100%", height: "100%" }}>
         <CustomerFormComponent
           control={control}

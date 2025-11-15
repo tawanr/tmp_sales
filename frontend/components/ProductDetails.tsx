@@ -6,12 +6,12 @@ import {
   StyleSheet,
   View,
   Pressable,
-  Button,
   TextInput,
   Keyboard,
 } from "react-native";
 import { API_URL } from "@/utils/constants";
 import { useState } from "react";
+import Button from "./Button";
 
 type Props = {
   product: Product;
@@ -61,41 +61,48 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 5,
-  },
-  cancelButton: {
-    backgroundColor: "#f00",
-    borderRadius: 10,
-    color: "#f00",
-    padding: 10,
+    gap: 10,
   },
   countRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#eee",
-    marginVertical: 6,
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+    marginVertical: 12,
+    overflow: "hidden",
   },
   minusButton: {
-    backgroundColor: "#aaa",
-    borderStartStartRadius: 10,
-    borderEndStartRadius: 10,
-    padding: 10,
-    flex: 1,
+    width: 48,
+    height: 48,
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
   plusButton: {
-    backgroundColor: "#aaa",
-    borderStartEndRadius: 10,
-    borderEndEndRadius: 10,
-    padding: 10,
-    flex: 1,
+    width: 48,
+    height: 48,
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
-  countText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#000",
-    width: "40%",
+  countButtonText: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#333",
+  },
+  countInput: {
+    flex: 1,
+    height: 48,
     textAlign: "center",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1a1a1a",
+    backgroundColor: "#fff",
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: "#e9ecef",
   },
 });
 
@@ -124,35 +131,41 @@ export default function ProductDetails({ product, close, callback }: Props) {
             />
             <View style={[styles.countRow]}>
               <Pressable
-                onPress={() => setCount(count - 1)}
-                style={[styles.minusButton]}
+                onPress={() => setCount(Math.max(1, count - 1))}
+                style={({ pressed }) => [
+                  styles.minusButton,
+                  { opacity: pressed ? 0.6 : 1 },
+                ]}
               >
-                <Text style={[styles.countText]}>-</Text>
+                <Text style={styles.countButtonText}>−</Text>
               </Pressable>
               <TextInput
-                style={[styles.countText]}
+                style={styles.countInput}
                 value={count.toString()}
                 onChangeText={convertCount}
-                inputMode="numeric"
-                // returnKeyType="done"
+                keyboardType="number-pad"
                 selectTextOnFocus={true}
               />
               <Pressable
                 onPress={() => setCount(count + 1)}
-                style={[styles.plusButton]}
+                style={({ pressed }) => [
+                  styles.plusButton,
+                  { opacity: pressed ? 0.6 : 1 },
+                ]}
               >
-                <Text style={[styles.countText]}>+</Text>
+                <Text style={styles.countButtonText}>+</Text>
               </Pressable>
             </View>
             <View style={[styles.buttonsRow]}>
               <Button
-                title="Cancel"
+                title="ยกเลิก"
                 onPress={close}
-                color={"#f00"}
+                variant="destructive"
               />
               <Button
-                title="Add"
+                title="เพิ่ม"
                 onPress={addProduct}
+                variant="primary"
               />
             </View>
           </View>

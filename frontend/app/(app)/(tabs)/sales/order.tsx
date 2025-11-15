@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
     alignContent: "center",
     justifyContent: "flex-start",
   },
@@ -470,9 +470,9 @@ export default function Order() {
           style={{
             backgroundColor: "#fff",
             borderWidth: 1,
-            borderColor: "#000",
+            borderColor: "#ccc",
           }}
-          textStyle={{ color: "#000" }}
+          textStyle={{ color: "#333" }}
         />
       </View>
       <View

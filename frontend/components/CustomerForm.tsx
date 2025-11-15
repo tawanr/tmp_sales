@@ -159,6 +159,14 @@ export default function CustomerFormComponent({
         )}
       />
       <View style={[styles.buttonsRow]}>
+        {onReset ? (
+          <Button
+            title="เคลียร์"
+            onPress={handleSubmit(onReset)}
+            variant="destructive"
+            style={{ marginBottom: 15, marginTop: 5 }}
+          />
+        ) : null}
         {onSubmitAndEdit ? (
           <Button
             title="แก้ไข"
@@ -173,14 +181,6 @@ export default function CustomerFormComponent({
           variant="primary"
           style={{ marginBottom: 15, marginTop: 5 }}
         /> */}
-        {onReset ? (
-          <Button
-            title="เคลียร์"
-            onPress={handleSubmit(onReset)}
-            variant="destructive"
-            style={{ marginBottom: 15, marginTop: 5 }}
-          />
-        ) : null}
       </View>
     </View>
   );
