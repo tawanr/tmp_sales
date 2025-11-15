@@ -125,9 +125,12 @@ const styles = StyleSheet.create({
   },
   containerSection: {
     width: "60%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    columnGap: 10,
   },
   containerHeader: {
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     alignContent: "center",
@@ -137,6 +140,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e9ecef",
     height: 40,
+    flex: 1,
   },
   containerHeaderText: {
     fontSize: 14,
@@ -478,7 +482,8 @@ export default function Order() {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "center",
+            gap: 0,
           }}
         >
           <View style={[styles.countControls, { marginHorizontal: 0 }]}>
@@ -490,15 +495,31 @@ export default function Order() {
           </View>
           {deliveryDetails.isDeliver ? (
             <View style={styles.containerSection}>
+              <TextInput
+                placeholder="ขนส่ง"
+                value={customer.deliveryService}
+                onChangeText={(text) =>
+                  updateOrderCustomer({ ...customer, deliveryService: text })
+                }
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#e9ecef",
+                  borderRadius: 6,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
+                  height: 40,
+                  width: 100,
+                }}
+              />
               <Pressable
-                style={styles.containerHeader}
+                style={[styles.containerHeader, { borderRadius: 6 }]}
                 onPress={() => setIsContainerSelectorVisible(true)}
               >
-                <Text style={styles.containerHeaderText}>
-                  {`บรรจุภัณฑ์${
+                <Text style={[styles.containerHeaderText, { fontSize: 14 }]}>
+                  {`${
                     containerManager && containerManager.getTotalQuantity() > 0
-                      ? ` (${containerManager.getTotalQuantity()} ใบ)`
-                      : " - ยังไม่ได้เลือก"
+                      ? `${containerManager.getTotalQuantity()} ใบ`
+                      : "บรรจุภัณฑ์"
                   }`}
                 </Text>
               </Pressable>
