@@ -117,13 +117,13 @@ export function generateOrderSummary(
   text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
   if (!isWithoutDetails && deliveryDetails.isDeliver) {
     text += `---\n`;
-    if (customer.deliveryService.length > 0) {
-      text += `ส่ง ${customer.deliveryService}\n`;
-    }
+    text += `ส่ง ${customer.deliveryService}\n`;
     orders.forEach((order) => {
       text += generateOrderHeader(order);
     });
-    text += `${customer.deliveryNote}\n`;
+    if (customer.deliveryNote.length > 0) {
+      text += `\n${customer.deliveryNote}\n`;
+    }
   }
   return text;
 }
@@ -305,6 +305,7 @@ export function changeItemAmount(id: string, amount: number) {
 
 export function clearItems() {
   useOrderStore.setState({ orders: new Map<string, OrderItem>() });
+  useOrderStore.setState({ customer: createEmptyCustomer() });
 }
 
 export function removeItem(id: string) {

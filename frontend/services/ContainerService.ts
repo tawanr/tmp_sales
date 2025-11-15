@@ -197,13 +197,13 @@ export class ContainerManager {
       selections.forEach((selection) => {
         const { spec, quantity, totalPrice } = selection;
         if (selection.deliveryPrice) {
-          text += `${spec.name} (${spec.price} + ${
+          text += `${spec.name}\n(${spec.price}+${
             selection.deliveryPrice
-          }) x ${quantity} = ${
+          })x${quantity}\n=${
             totalPrice + selection.deliveryPrice * selection.quantity
           }\n`;
         } else {
-          text += `${spec.name} ${spec.price} x ${quantity} = ${totalPrice}\n`;
+          text += `${spec.name}\n${spec.price}x${quantity}\n=${totalPrice}\n`;
         }
         text += `\n`;
       });
