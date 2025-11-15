@@ -27,3 +27,5 @@ pb_data
 pocketbase
 frontend/android
 .DS_Store
+node_modules
+frontend/node_modules
