@@ -729,38 +729,77 @@ export default function Order() {
             flexDirection: "row",
             columnGap: 10,
             justifyContent: "center",
+            marginBottom: 8,
           }}
         >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#f00",
-              height: 35,
-              width: 100,
-              marginBottom: 10,
-              borderRadius: 6,
-            }}
+          <Pressable
+            onPress={clearItems}
+            style={({ pressed }) => [
+              {
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#ef4444",
+                height: 40,
+                minWidth: 100,
+                paddingHorizontal: 20,
+                marginBottom: 10,
+                borderRadius: 8,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowOpacity: 0.08,
+                shadowRadius: 2,
+                elevation: 2,
+                opacity: pressed ? 0.85 : 1,
+              },
+            ]}
           >
-            <Pressable onPress={clearItems}>
-              <Text style={{ color: "#fff" }}>ล้าง</Text>
-            </Pressable>
-          </View>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#00d",
-              height: 35,
-              width: 100,
-              marginBottom: 10,
-              borderRadius: 6,
-            }}
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: "600",
+              }}
+            >
+              ล้าง
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={onSubmit}
+            style={({ pressed }) => [
+              {
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: PRIMARY_LIGHT,
+                height: 40,
+                minWidth: 100,
+                paddingHorizontal: 20,
+                marginBottom: 10,
+                borderRadius: 8,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 2,
+                elevation: 2,
+                opacity: pressed ? 0.85 : 1,
+              },
+            ]}
           >
-            <Pressable onPress={onSubmit}>
-              <Text style={{ color: "#fff" }}>เสร็จสิ้น</Text>
-            </Pressable>
-          </View>
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: "600",
+              }}
+            >
+              เสร็จสิ้น
+            </Text>
+          </Pressable>
         </View>
       </View>
       {/* End fixedBottomSection */}
