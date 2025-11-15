@@ -14,7 +14,7 @@ import {
 import { useUserStore } from "@/services/UserService";
 import { API_URL, PRIMARY_DARK, PRIMARY_LIGHT } from "@/utils/constants";
 import { FontAwesome } from "@expo/vector-icons";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Animated,
@@ -57,16 +57,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#00f",
     padding: 10,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  customerEditButton: {
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 10,
-    borderColor: "#000",
-    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
@@ -230,6 +220,7 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
 };
 
 export default function Order() {
+  const router = useRouter();
   const { orders, customer, deliveryDetails, orderOptions, containerManager } =
     useOrderStore(
       useShallow((state) => ({
@@ -472,13 +463,17 @@ export default function Order() {
             />
           </Pressable>
         </View>
-        <View>
-          <Link href="/sales/customer">
-            <View style={[styles.customerEditButton]}>
-              <Text style={{ color: "#000" }}>แก้ไข</Text>
-            </View>
-          </Link>
-        </View>
+        <Button
+          title="แก้ไข"
+          onPress={() => router.push("/sales/customer")}
+          variant="secondary"
+          style={{
+            backgroundColor: "#fff",
+            borderWidth: 1,
+            borderColor: "#000",
+          }}
+          textStyle={{ color: "#000" }}
+        />
       </View>
       <View
         style={{

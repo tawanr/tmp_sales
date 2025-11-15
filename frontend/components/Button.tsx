@@ -36,7 +36,7 @@ const Button: React.FC<ButtonProps> = ({
       height: 40,
       minWidth: 100,
       paddingHorizontal: 20,
-      borderRadius: 8,
+      borderRadius: 6,
       shadowColor: "#000",
       shadowOffset: {
         width: 0,

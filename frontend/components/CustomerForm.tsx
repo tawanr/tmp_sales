@@ -1,13 +1,7 @@
 import { Customer } from "@/services/CustomerService";
 import { Control, Controller, UseFormHandleSubmit } from "react-hook-form";
-import {
-  Button,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import Button from "./Button";
 
 type Props = {
   control: Control<Customer, any>;
@@ -49,56 +43,13 @@ const styles = StyleSheet.create({
     alignContent: "center",
     paddingRight: 10,
   },
-  fullButton: {
-    width: "100%",
-    height: 35,
-    backgroundColor: "#00e",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginBottom: 15,
-    marginTop: 5,
-  },
   buttonsRow: {
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignContent: "flex-end",
     paddingVertical: 20,
     paddingHorizontal: 10,
-  },
-  primaryButton: {
-    height: 40,
-    width: 100,
-    backgroundColor: "rgba(0, 139, 23, 1)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginBottom: 15,
-    marginTop: 5,
-    color: "#fff",
-  },
-  saveButton: {
-    height: 40,
-    width: 100,
-    backgroundColor: "#00e",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginBottom: 15,
-    marginTop: 5,
-    color: "#fff",
-  },
-  clearButton: {
-    height: 40,
-    width: 100,
-    backgroundColor: "rgba(255, 3, 3, 1)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginBottom: 15,
-    marginTop: 5,
-    color: "#fff",
   },
 });
 
@@ -209,26 +160,26 @@ export default function CustomerFormComponent({
       />
       <View style={[styles.buttonsRow]}>
         {onSubmitAndEdit ? (
-          <Pressable
+          <Button
+            title="แก้ไข"
             onPress={handleSubmit(onSubmitAndEdit)}
-            style={[styles.primaryButton]}
-          >
-            <Text style={{ color: "#fff" }}>แก้ไข</Text>
-          </Pressable>
+            variant="primary"
+            style={{ marginBottom: 15, marginTop: 5 }}
+          />
         ) : null}
-        <Pressable
+        {/* <Button
+          title="บันทึก"
           onPress={handleSubmit(onSubmit)}
-          style={[styles.saveButton]}
-        >
-          <Text style={{ color: "#fff" }}>บันทึก</Text>
-        </Pressable>
+          variant="primary"
+          style={{ marginBottom: 15, marginTop: 5 }}
+        /> */}
         {onReset ? (
-          <Pressable
+          <Button
+            title="เคลียร์"
             onPress={handleSubmit(onReset)}
-            style={[styles.clearButton]}
-          >
-            <Text style={{ color: "#fff" }}>เคลียร์</Text>
-          </Pressable>
+            variant="destructive"
+            style={{ marginBottom: 15, marginTop: 5 }}
+          />
         ) : null}
       </View>
     </View>
