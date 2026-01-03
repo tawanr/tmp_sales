@@ -197,7 +197,7 @@ export class ContainerManager {
       selections.forEach((selection) => {
         const { spec, quantity, totalPrice } = selection;
         if (selection.deliveryPrice) {
-          text += `${spec.name}\n(${spec.price}+${
+          text += `${spec.name} + ค่าส่ง\n(${spec.price}+${
             selection.deliveryPrice
           })x${quantity}\n=${
             totalPrice + selection.deliveryPrice * selection.quantity
