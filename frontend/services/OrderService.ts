@@ -89,6 +89,7 @@ export function generateOrderSummary(
   let text = "";
   let totalCost = 0;
   let deliveryCost = 0;
+  let productCost = 0;
   if (!isWithoutDetails) {
     text += `${date.getDate()}/${date.getMonth() + 1} ${customer.name} ${
       deliveryDetails.isDeliver ? "" : deliveryDetails.productLocation
@@ -103,6 +104,7 @@ export function generateOrderSummary(
   orders.forEach((order) => {
     text += generateOrderText(order);
     totalCost += order.product.price * order.count * order.product.kg;
+    productCost = totalCost;
   });
 
   if (deliveryDetails.isDeliver) {
@@ -111,10 +113,20 @@ export function generateOrderSummary(
       const containerSummary = containerManager.getSummary();
       deliveryCost += containerSummary.totalPrice;
       deliveryCost += containerSummary.totalDeliveryPrice;
+      text += `ค่าสินค้า = ${numberWithCommas(productCost)} บาท\n`;
+      text += `ค่าโฟม = ${numberWithCommas(containerSummary.totalPrice)} บาท\n`;
+      if (containerSummary.totalDeliveryPrice > 0) {
+        text += `ค่าส่ง = ${numberWithCommas(containerSummary.totalDeliveryPrice)} บาท\n`;
+      } else {
+        text += `ค่าส่ง = จ่ายปลายทาง\n`;
+      }
+    } else {
+      text += `ค่าสินค้า = ${numberWithCommas(productCost)} บาท\n`;
     }
     totalCost += deliveryCost;
   }
-  text += `รวม ${numberWithCommas(totalCost)} บาท\n\n`;
+
+  text += `*ยอดโอน ${numberWithCommas(totalCost)} บาท*\n\n`;
   if (!isWithoutDetails && deliveryDetails.isDeliver) {
     text += `---\n`;
     text += `ส่ง ${customer.deliveryService}\n`;
