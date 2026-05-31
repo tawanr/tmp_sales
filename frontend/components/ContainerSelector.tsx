@@ -302,12 +302,16 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
         >
           <View style={styles.containerInfo}>
             <Text style={styles.containerName}>{item.spec.name}</Text>
-            <Text style={styles.containerDetails}>
-              {item.spec.price} บาท/ใบ
-            </Text>
-            <Text style={styles.containerDetails}>
-              รวม {numberWithCommas(item.totalPrice)} บาท
-            </Text>
+            {item.spec.type !== ContainerType.BARREL && (
+              <>
+                <Text style={styles.containerDetails}>
+                  {item.spec.price} บาท/ใบ
+                </Text>
+                <Text style={styles.containerDetails}>
+                  รวม {numberWithCommas(item.totalPrice)} บาท
+                </Text>
+              </>
+            )}
           </View>
 
           <View style={styles.quantityControls}>
@@ -384,7 +388,9 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
     <View style={styles.specItem}>
       <View style={styles.specInfo}>
         <Text style={styles.specName}>{item.name}</Text>
-        <Text style={styles.specPrice}>{item.price} บาท/ใบ</Text>
+        {item.type !== ContainerType.BARREL && (
+          <Text style={styles.specPrice}>{item.price} บาท/ใบ</Text>
+        )}
       </View>
       <Pressable
         style={styles.selectButton}
@@ -403,6 +409,7 @@ const ContainerSelector: React.FC<ContainerSelectorProps> = ({
     const typeNames = {
       [ContainerType.FOAM]: "โฟม",
       [ContainerType.BLACK_BAG]: "ถุงดำ",
+      [ContainerType.BARREL]: "ถัง",
     };
 
     return (
