@@ -122,4 +122,51 @@ describe("generateOrderSummary delivery promo", () => {
     // 6000 + 65 container + 20 fee - 50 promo = 6035
     expect(summary).toContain("ยอดโอน 6,035 บาท");
   });
+
+  it("omits ค่าโฟม line for barrel-only order, shows delivery", () => {
+    const cm = new ContainerManager();
+    cm.addContainer("barrel", 2);
+    cm.updateContainerDeliveryPrice("barrel", 30); // fee 60 total
+    const summary = generateOrderSummary(
+      makeOrders(100, 1, 10), // 1000
+      createEmptyCustomer(),
+      deliver,
+      { ...optionsPromoOn, promoDeliveryDiscount: false },
+      cm
+    );
+    expect(summary).not.toContain("ค่าโฟม");
+    expect(summary).toContain("ค่าส่ง = 60 บาท");
+    // 1000 products + 0 container + 60 delivery = 1060
+    expect(summary).toContain("ยอดโอน 1,060 บาท");
+  });
+
+  it("omits ค่าโฟม line for barrel-only order without delivery", () => {
+    const cm = new ContainerManager();
+    cm.addContainer("barrel", 1);
+    const summary = generateOrderSummary(
+      makeOrders(100, 1, 10), // 1000
+      createEmptyCustomer(),
+      deliver,
+      { ...optionsPromoOn, promoDeliveryDiscount: false },
+      cm
+    );
+    expect(summary).not.toContain("ค่าโฟม");
+    expect(summary).toContain("ยอดโอน 1,000 บาท");
+  });
+
+  it("shows ค่าโฟม with foam cost only when foam + barrel mixed", () => {
+    const cm = new ContainerManager();
+    cm.addContainer("foam_small", 1); // price 65
+    cm.addContainer("barrel", 1); // price 0
+    const summary = generateOrderSummary(
+      makeOrders(100, 1, 10), // 1000
+      createEmptyCustomer(),
+      deliver,
+      { ...optionsPromoOn, promoDeliveryDiscount: false },
+      cm
+    );
+    expect(summary).toContain("ค่าโฟม = 65 บาท");
+    // 1000 + 65 container = 1065
+    expect(summary).toContain("ยอดโอน 1,065 บาท");
+  });
 });

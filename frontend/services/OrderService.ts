@@ -122,7 +122,9 @@ export function generateOrderSummary(
       deliveryCost += containerSummary.totalPrice;
       deliveryCost += containerSummary.totalDeliveryPrice;
       text += `ค่าสินค้า = ${numberWithCommas(productCost)} บาท\n`;
-      text += `ค่าโฟม = ${numberWithCommas(containerSummary.totalPrice)} บาท\n`;
+      if (containerSummary.totalPrice > 0) {
+        text += `ค่าโฟม = ${numberWithCommas(containerSummary.totalPrice)} บาท\n`;
+      }
       if (containerSummary.totalDeliveryPrice > 0) {
         text += `ค่าส่ง = ${numberWithCommas(containerSummary.totalDeliveryPrice)} บาท\n`;
       } else {
