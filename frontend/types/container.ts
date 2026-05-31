@@ -6,6 +6,7 @@
 export enum ContainerType {
   FOAM = "foam",
   BLACK_BAG = "black_bag",
+  BARREL = "barrel",
 }
 
 export enum ContainerSize {
@@ -66,6 +67,15 @@ export const CONTAINER_SPECS: Record<string, ContainerSpec> = {
     price: 10,
     capacity: 12,
     description: "ถุงดำขนาดใหญ่ สำหรับสินค้า 7-12 กก",
+  },
+
+  // Barrel container (no cost; customer-provided, optional delivery fee)
+  barrel: {
+    type: ContainerType.BARREL,
+    size: ContainerSize.LARGE,
+    name: "ถัง",
+    price: 0,
+    description: "ถัง ไม่มีค่าภาชนะ ใช้ร่วมกับค่าส่งได้",
   },
 };
 
