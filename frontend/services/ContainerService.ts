@@ -7,6 +7,7 @@ import {
   ContainerSelection,
   ContainerSpec,
   ContainerSummary,
+  ContainerType,
   CONTAINER_SPECS,
   calculateContainerSummary,
   createContainerSelection,
@@ -196,12 +197,16 @@ export class ContainerManager {
     if (includeDetails) {
       selections.forEach((selection) => {
         const { spec, quantity, totalPrice } = selection;
+        const isBarrel = spec.type === ContainerType.BARREL;
         if (selection.deliveryPrice) {
-          text += `${spec.name} + ค่าส่ง\n(${spec.price}+${
-            selection.deliveryPrice
-          })x${quantity}\n=${
+          const priceExpr = isBarrel
+            ? `${selection.deliveryPrice}`
+            : `${spec.price}+${selection.deliveryPrice}`;
+          text += `${spec.name} + ค่าส่ง\n(${priceExpr})x${quantity}\n=${
             totalPrice + selection.deliveryPrice * selection.quantity
           }\n`;
+        } else if (isBarrel) {
+          text += `${spec.name}\nx${quantity}\n`;
         } else {
           text += `${spec.name}\n${spec.price}x${quantity}\n=${totalPrice}\n`;
         }
