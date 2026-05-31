@@ -110,6 +110,8 @@ export function generateOrderSummary(
   orders.forEach((order) => {
     text += generateOrderText(order);
     totalCost += order.product.price * order.count * order.product.kg;
+    // productCost = products only; captured before delivery/container costs are
+    // added to totalCost. The promo threshold below depends on this ordering.
     productCost = totalCost;
   });
 
