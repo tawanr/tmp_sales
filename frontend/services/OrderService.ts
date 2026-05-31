@@ -6,6 +6,10 @@ import pb from "@/utils/pocketbase";
 import { User } from "./UserService";
 import ContainerManager from "./ContainerService";
 import { ContainerSelection } from "@/types/container";
+import {
+  DELIVERY_PROMO_DISCOUNT,
+  DELIVERY_PROMO_MIN_PRODUCT_COST,
+} from "@/utils/constants";
 
 export type CompleteOrder = {
   customer: string;
@@ -35,6 +39,7 @@ export interface OrderOptions {
   isWithoutDetails: boolean;
   orderType: boolean;
   packageType: boolean; // Kept for backward compatibility
+  promoDeliveryDiscount: boolean;
 }
 
 type OrderState = {
@@ -56,6 +61,7 @@ type OrderActions = {
   toggleIsWithoutDetails: () => void;
   toggleOrderType: () => void;
   togglePackageType: () => void;
+  togglePromoDeliveryDiscount: () => void;
   setProductLocation: (value: string) => void;
   updateContainerManager: (manager: ContainerManager) => void; // New container action
   syncContainerCount: () => void; // Sync legacy container count
@@ -123,6 +129,13 @@ export function generateOrderSummary(
     } else {
       text += `ค่าสินค้า = ${numberWithCommas(productCost)} บาท\n`;
     }
+    if (
+      orderOptions.promoDeliveryDiscount &&
+      productCost > DELIVERY_PROMO_MIN_PRODUCT_COST
+    ) {
+      text += `TMP ช่วยค่าส่ง ${DELIVERY_PROMO_DISCOUNT} บาท\n`;
+      totalCost -= DELIVERY_PROMO_DISCOUNT;
+    }
     totalCost += deliveryCost;
   }
 
@@ -184,6 +197,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     isWithoutDetails: false,
     orderType: false,
     packageType: false,
+    promoDeliveryDiscount: true,
   },
   containerManager: new ContainerManager(), // Initialize container manager
   clearCustomer: () => {
@@ -267,6 +281,14 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
       orderOptions: {
         ...state.orderOptions,
         packageType: !state.orderOptions.packageType,
+      },
+    }));
+  },
+  togglePromoDeliveryDiscount: () => {
+    set((state: OrderState) => ({
+      orderOptions: {
+        ...state.orderOptions,
+        promoDeliveryDiscount: !state.orderOptions.promoDeliveryDiscount,
       },
     }));
   },
