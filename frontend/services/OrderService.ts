@@ -201,7 +201,7 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     isWithoutDetails: false,
     orderType: false,
     packageType: false,
-    promoDeliveryDiscount: true,
+    promoDeliveryDiscount: false,
   },
   containerManager: new ContainerManager(), // Initialize container manager
   clearCustomer: () => {

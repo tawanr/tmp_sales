@@ -239,7 +239,6 @@ export default function Order() {
     toggleOrderType,
     setProductLocation,
     updateContainerManager,
-    togglePromoDeliveryDiscount,
   } = useOrderStore();
   const { user } = useUserStore();
   const [summary, setSummary] = useState("");
@@ -659,23 +658,6 @@ export default function Order() {
                 style={{ paddingHorizontal: 20, paddingVertical: 10 }}
                 showsVerticalScrollIndicator={true}
               >
-                <View
-                  style={{
-                    width: "100%",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text style={{ fontWeight: "600" }}>โปรโมชั่นส่วนลด</Text>
-                  <Switch
-                    trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
-                    value={orderOptions.promoDeliveryDiscount}
-                    onValueChange={togglePromoDeliveryDiscount}
-                    ios_backgroundColor={PRIMARY_DARK}
-                  />
-                </View>
                 <ContainerSelector
                   containerManager={containerManager}
                   onContainerChange={handleContainerChange}
