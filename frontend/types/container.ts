@@ -58,6 +58,14 @@ export const CONTAINER_SPECS: Record<string, ContainerSpec> = {
     capacity: 15,
     description: "โฟมขนาดใหญ่ สำหรับสินค้า 10-15 กก",
   },
+  foam_used: {
+    type: ContainerType.FOAM,
+    size: ContainerSize.LARGE,
+    name: "โฟมใหญ่มือ 2",
+    price: 40,
+    capacity: 15,
+    description: "โฟมใหญ่มือ 2 สำหรับสินค้า 10-15 กก",
+  },
 
   // Black bag containers
   black_bag: {
