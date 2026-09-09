@@ -42,12 +42,18 @@ export interface OrderOptions {
   promoDeliveryDiscount: boolean;
 }
 
+export interface DiscountDetails {
+  enabled: boolean;
+  amount: string;
+}
+
 type OrderState = {
   orders: Map<string, OrderItem>;
   customer: Customer;
   deliveryDetails: DeliveryDetails;
   orderOptions: OrderOptions;
   containerManager: ContainerManager; // New container manager
+  discountDetails: DiscountDetails;
 };
 
 type OrderActions = {
@@ -65,6 +71,8 @@ type OrderActions = {
   setProductLocation: (value: string) => void;
   updateContainerManager: (manager: ContainerManager) => void; // New container action
   syncContainerCount: () => void; // Sync legacy container count
+  setDiscountEnabled: (value: boolean) => void;
+  setDiscountAmount: (value: string) => void;
 };
 
 function generateOrderHeader(order: OrderItem): string {
@@ -210,6 +218,10 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
     promoDeliveryDiscount: false,
   },
   containerManager: new ContainerManager(), // Initialize container manager
+  discountDetails: {
+    enabled: false,
+    amount: "",
+  },
   clearCustomer: () => {
     set((state: OrderState) => ({
       ...state,
@@ -331,6 +343,24 @@ export const useOrderStore = create<OrderState & OrderActions>((set) => ({
       },
     }));
   },
+  setDiscountEnabled: (value: boolean) => {
+    set((state: OrderState) => ({
+      ...state,
+      discountDetails: {
+        ...state.discountDetails,
+        enabled: value,
+      },
+    }));
+  },
+  setDiscountAmount: (value: string) => {
+    set((state: OrderState) => ({
+      ...state,
+      discountDetails: {
+        ...state.discountDetails,
+        amount: value,
+      },
+    }));
+  },
 }));
 
 // https://zustand.docs.pmnd.rs/guides/maps-and-sets-usage
@@ -350,6 +380,7 @@ export function changeItemAmount(id: string, amount: number) {
 export function clearItems() {
   useOrderStore.setState({ orders: new Map<string, OrderItem>() });
   useOrderStore.setState({ customer: createEmptyCustomer() });
+  useOrderStore.setState({ discountDetails: { enabled: false, amount: "" } });
 }
 
 export function removeItem(id: string) {

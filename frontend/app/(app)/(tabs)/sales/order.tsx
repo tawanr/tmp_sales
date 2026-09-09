@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   discountHeader: {
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 6,
@@ -159,12 +159,13 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   discountRow: {
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",
     columnGap: 10,
     marginBottom: 8,
+    justifyContent: "space-between",
   },
   discountInput: {
     flex: 1,
@@ -250,16 +251,23 @@ const OrderListItem = ({ order }: { order: OrderItem }) => {
 
 export default function Order() {
   const router = useRouter();
-  const { orders, customer, deliveryDetails, orderOptions, containerManager } =
-    useOrderStore(
-      useShallow((state) => ({
-        orders: state.orders,
-        customer: state.customer,
-        deliveryDetails: state.deliveryDetails,
-        orderOptions: state.orderOptions,
-        containerManager: state.containerManager,
-      }))
-    );
+  const {
+    orders,
+    customer,
+    deliveryDetails,
+    orderOptions,
+    containerManager,
+    discountDetails,
+  } = useOrderStore(
+    useShallow((state) => ({
+      orders: state.orders,
+      customer: state.customer,
+      deliveryDetails: state.deliveryDetails,
+      orderOptions: state.orderOptions,
+      containerManager: state.containerManager,
+      discountDetails: state.discountDetails,
+    }))
+  );
   const {
     toggleIsDelivery,
     changeDeliveryCost,
@@ -268,6 +276,8 @@ export default function Order() {
     toggleOrderType,
     setProductLocation,
     updateContainerManager,
+    setDiscountEnabled,
+    setDiscountAmount,
   } = useOrderStore();
   const { user } = useUserStore();
   const [summary, setSummary] = useState("");
@@ -280,8 +290,7 @@ export default function Order() {
   const [isContainerSelectorVisible, setIsContainerSelectorVisible] =
     useState(false);
   const [isDiscountExpanded, setIsDiscountExpanded] = useState(false);
-  const [discountEnabled, setDiscountEnabled] = useState(false);
-  const [discountText, setDiscountText] = useState("");
+  const { enabled: discountEnabled, amount: discountText } = discountDetails;
   const discountAmount = discountEnabled ? parseFloat(discountText) || 0 : 0;
 
   const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์", "เบิก MMF"];
@@ -301,8 +310,6 @@ export default function Order() {
         updateOrderCustomer(createEmptyCustomer());
         resetDeliveryDetails();
         setIsDiscountExpanded(false);
-        setDiscountEnabled(false);
-        setDiscountText("");
         // Clear container manager and update state
         if (containerManager) {
           containerManager.clear();
@@ -555,6 +562,44 @@ export default function Order() {
           paddingHorizontal: 15,
         }}
       >
+        <Pressable
+          style={styles.discountHeader}
+          onPress={() => setIsDiscountExpanded(!isDiscountExpanded)}
+        >
+          <FontAwesome
+            name={isDiscountExpanded ? "chevron-down" : "chevron-up"}
+            size={14}
+            color="#888"
+          />
+          {(!isDiscountExpanded && discountEnabled && discountAmount > 0) && (
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 5, position: "absolute", right: 0, paddingBottom: 5 }}>
+              <Text style={{ fontSize: 10, color: PRIMARY_DARK, fontWeight: "bold" }}>
+                ส่วนลด: {discountAmount} บาท
+              </Text>
+            </View>
+          )}
+        </Pressable>
+        {isDiscountExpanded && (
+          <View style={[styles.discountRow, { gap: 0 }]}>
+            <View style={[styles.countControls, { marginHorizontal: 0 }]}>
+              <Text style={styles.discountHeaderText}>ส่วนลด</Text>
+              <Switch
+                value={discountEnabled}
+                onValueChange={setDiscountEnabled}
+                ios_backgroundColor={PRIMARY_DARK}
+              />
+            </View>
+            <TextInput
+              keyboardType="numeric"
+              returnKeyType="done"
+              value={discountText}
+              onChangeText={setDiscountAmount}
+              placeholder="0"
+              style={styles.discountInput}
+            />
+            <Text>บาท</Text>
+          </View>
+        )}
         <View
           style={{
             flexDirection: "row",
@@ -568,6 +613,7 @@ export default function Order() {
             <Switch
               value={deliveryDetails.isDeliver}
               onValueChange={toggleIsDelivery}
+              ios_backgroundColor={PRIMARY_DARK}
             />
           </View>
           {deliveryDetails.isDeliver ? (
@@ -709,35 +755,6 @@ export default function Order() {
       </Modal>
       {/* Fixed Bottom Section */}
       <View style={styles.fixedBottomSection}>
-        <Pressable
-          style={styles.discountHeader}
-          onPress={() => setIsDiscountExpanded(!isDiscountExpanded)}
-        >
-          <Text style={styles.discountHeaderText}>ส่วนลด</Text>
-          <FontAwesome
-            name={isDiscountExpanded ? "chevron-down" : "chevron-up"}
-            size={14}
-            color="#888"
-          />
-        </Pressable>
-        {isDiscountExpanded && (
-          <View style={styles.discountRow}>
-            <Switch
-              trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
-              value={discountEnabled}
-              onValueChange={setDiscountEnabled}
-              ios_backgroundColor={PRIMARY_DARK}
-            />
-            <TextInput
-              keyboardType="numeric"
-              value={discountText}
-              onChangeText={setDiscountText}
-              placeholder="0"
-              style={styles.discountInput}
-            />
-            <Text>บาท</Text>
-          </View>
-        )}
         <View
           style={{
             width: "90%",
@@ -801,8 +818,6 @@ export default function Order() {
             onPress={() => {
               clearItems();
               setIsDiscountExpanded(false);
-              setDiscountEnabled(false);
-              setDiscountText("");
             }}
             variant="destructive"
             style={{ marginBottom: 10 }}
