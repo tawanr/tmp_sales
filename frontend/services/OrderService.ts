@@ -88,7 +88,8 @@ export function generateOrderSummary(
   customer: Customer,
   deliveryDetails: DeliveryDetails,
   orderOptions: OrderOptions,
-  containerManager?: ContainerManager
+  containerManager?: ContainerManager,
+  discountAmount: number = 0
 ): string {
   const date = new Date();
   const { isWithoutDetails, orderType, packageType } = orderOptions;
@@ -141,6 +142,11 @@ export function generateOrderSummary(
       totalCost -= DELIVERY_PROMO_DISCOUNT;
     }
     totalCost += deliveryCost;
+  }
+
+  if (discountAmount > 0) {
+    text += `ส่วนลด ${numberWithCommas(discountAmount)} บาท\n`;
+    totalCost -= discountAmount;
   }
 
   text += `*ยอดโอน ${numberWithCommas(totalCost)} บาท*\n\n`;

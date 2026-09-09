@@ -145,6 +145,35 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingTop: 10,
   },
+  discountHeader: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 6,
+  },
+  discountHeaderText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+  },
+  discountRow: {
+    width: "90%",
+    alignSelf: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    columnGap: 10,
+    marginBottom: 8,
+  },
+  discountInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+    borderRadius: 6,
+    paddingHorizontal: 10,
+  },
 });
 
 const OrderListItem = ({ order }: { order: OrderItem }) => {
@@ -250,6 +279,10 @@ export default function Order() {
   const { isWithoutDetails, orderType } = orderOptions;
   const [isContainerSelectorVisible, setIsContainerSelectorVisible] =
     useState(false);
+  const [isDiscountExpanded, setIsDiscountExpanded] = useState(false);
+  const [discountEnabled, setDiscountEnabled] = useState(false);
+  const [discountText, setDiscountText] = useState("");
+  const discountAmount = discountEnabled ? parseFloat(discountText) || 0 : 0;
 
   const locationOptions = ["-", "เบิก TMP", "เบิกคิงเวลล์", "เบิก MMF"];
 
@@ -267,6 +300,9 @@ export default function Order() {
         clearItems();
         updateOrderCustomer(createEmptyCustomer());
         resetDeliveryDetails();
+        setIsDiscountExpanded(false);
+        setDiscountEnabled(false);
+        setDiscountText("");
         // Clear container manager and update state
         if (containerManager) {
           containerManager.clear();
@@ -318,7 +354,8 @@ export default function Order() {
           customer,
           deliveryDetails,
           orderOptions,
-          containerManager
+          containerManager,
+          discountAmount
         )
       );
     } else {
@@ -339,6 +376,7 @@ export default function Order() {
     isWithoutDetails,
     containerManager,
     orderOptions.promoDeliveryDiscount,
+    discountAmount,
   ]);
 
   useEffect(() => {
@@ -671,6 +709,35 @@ export default function Order() {
       </Modal>
       {/* Fixed Bottom Section */}
       <View style={styles.fixedBottomSection}>
+        <Pressable
+          style={styles.discountHeader}
+          onPress={() => setIsDiscountExpanded(!isDiscountExpanded)}
+        >
+          <Text style={styles.discountHeaderText}>ส่วนลด</Text>
+          <FontAwesome
+            name={isDiscountExpanded ? "chevron-down" : "chevron-up"}
+            size={14}
+            color="#888"
+          />
+        </Pressable>
+        {isDiscountExpanded && (
+          <View style={styles.discountRow}>
+            <Switch
+              trackColor={{ false: PRIMARY_DARK, true: PRIMARY_LIGHT }}
+              value={discountEnabled}
+              onValueChange={setDiscountEnabled}
+              ios_backgroundColor={PRIMARY_DARK}
+            />
+            <TextInput
+              keyboardType="numeric"
+              value={discountText}
+              onChangeText={setDiscountText}
+              placeholder="0"
+              style={styles.discountInput}
+            />
+            <Text>บาท</Text>
+          </View>
+        )}
         <View
           style={{
             width: "90%",
@@ -731,7 +798,12 @@ export default function Order() {
         >
           <Button
             title="ล้าง"
-            onPress={clearItems}
+            onPress={() => {
+              clearItems();
+              setIsDiscountExpanded(false);
+              setDiscountEnabled(false);
+              setDiscountText("");
+            }}
             variant="destructive"
             style={{ marginBottom: 10 }}
           />
