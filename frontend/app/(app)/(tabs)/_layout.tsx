@@ -1,6 +1,21 @@
 import { PRIMARY_DARK, PRIMARY_LIGHT } from "@/utils/constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
+import type { ComponentProps } from "react";
+import type { ColorValue } from "react-native";
+
+type IconName = ComponentProps<typeof FontAwesome>["name"];
+
+// Tab tint colors are plain strings (see screenOptions), so narrowing is safe.
+const tabIcon =
+  (name: IconName) =>
+  ({ color }: { color: ColorValue }) => (
+    <FontAwesome
+      size={28}
+      name={name}
+      color={color as string}
+    />
+  );
 
 export default function TabLayout() {
   return (
@@ -13,9 +28,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
-          ),
+          tabBarIcon: tabIcon("home"),
           headerShown: false,
         }}
       />
@@ -23,9 +36,7 @@ export default function TabLayout() {
         name="sales"
         options={{
           title: "Sales",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="file" color={color} />
-          ),
+          tabBarIcon: tabIcon("file"),
           headerShown: false,
         }}
       />
@@ -33,16 +44,14 @@ export default function TabLayout() {
         name="orders"
         options={{
           title: "Orders",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="shopping-cart" color={color} />
-          ),
+          tabBarIcon: tabIcon("shopping-cart"),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="cog" color={color} />,
+          tabBarIcon: tabIcon("cog"),
         }}
       />
     </Tabs>
