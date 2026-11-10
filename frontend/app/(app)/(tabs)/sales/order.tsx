@@ -175,6 +175,25 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 10,
   },
+  discountPresetRow: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginBottom: 8,
+  },
+  discountPresetBubble: {
+    borderWidth: 1,
+    borderColor: "#e9ecef",
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  discountPresetBubbleText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: PRIMARY_DARK,
+  },
 });
 
 const OrderListItem = ({ order }: { order: OrderItem }) => {
@@ -579,6 +598,19 @@ export default function Order() {
             </View>
           )}
         </Pressable>
+        {isDiscountExpanded && (
+          <View style={styles.discountPresetRow}>
+            <Pressable
+              style={styles.discountPresetBubble}
+              onPress={() => {
+                setDiscountAmount("111");
+                if (!discountEnabled) setDiscountEnabled(true);
+              }}
+            >
+              <Text style={styles.discountPresetBubbleText}>111 บาท</Text>
+            </Pressable>
+          </View>
+        )}
         {isDiscountExpanded && (
           <View style={[styles.discountRow, { gap: 0 }]}>
             <View style={[styles.countControls, { marginHorizontal: 0 }]}>
